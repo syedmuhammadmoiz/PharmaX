@@ -40,6 +40,7 @@ function createMainWindow() {
 			slashes: true,
 		})
 	}
+	
 
 	mainWindow.loadURL(indexPath)
 

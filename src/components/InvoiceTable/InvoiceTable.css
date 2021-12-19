@@ -1,0 +1,95 @@
+.Contain {
+  width: 70rem;
+  margin: auto;
+}
+.background {
+  background-color: white;
+  height: 48.75rem;
+}
+.Invoice {
+  padding: 1rem 0 1rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.line {
+  height: 1.5rem;
+  width: 0rem;
+  border: 0.025rem solid black;
+  color: black;
+  margin: 0 1rem 0 1rem;
+}
+
+#first {
+  margin: 0 1rem 0 1rem;
+}
+
+.import {
+  margin-right: 0.5rem;
+}
+
+.Invoice-options {
+  display: flex;
+}
+
+.inputs {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+}
+
+.sales {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+.sales input {
+  margin-top: 0.5rem;
+  width: 18rem;
+  height: 2rem;
+}
+
+.detail input {
+  margin-top: 0.5rem;
+  height: 2rem;
+}
+.in_detail {
+  display: flex;
+}
+
+.dotted {
+  border-top: 1px dashed gray;
+  margin: 1rem 0 1rem 0;
+}
+#new {
+  padding: 1rem 0 0rem 0;
+  color: rgb(0, 153, 255);
+}
+.back {
+  position: absolute;
+  left: 3rem;
+  top: 1rem;
+}
+
+.total {
+  height: 5rem;
+  width: 12rem;
+  border: 1px solid #d1d1d1;
+  background-color: #f7f8f8;
+  padding: 0.5rem;
+}
+
+.total-area {
+  display: flex;
+  justify-content: space-between;
+}
+
+textarea {
+  border-color: #d1d1d1;
+}
