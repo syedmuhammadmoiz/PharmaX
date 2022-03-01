@@ -32,6 +32,7 @@ function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 1100,
 		height: 800,
+		minWidth:900,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {

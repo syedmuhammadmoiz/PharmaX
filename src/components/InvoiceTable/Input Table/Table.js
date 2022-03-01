@@ -10,7 +10,17 @@ export const Table = ({senddata}) => {
   var [currentdata, setcurrentdata] = useState({})  //current data
   const [quantity,setquantity] = useState(null) //quantity of medicine
   const ref = useRef()
-
+  const reset = {
+    Bonus:'',
+    Code:'',
+    STP:'',
+    TP:'',
+    Price:'',
+    Quantity:'',
+    Total:'',
+    Name:'',
+    Batch:''
+  }
 
   //handle the next input move if input is empty it can't move
   const handleEnter1 = (event) =>{
@@ -62,7 +72,7 @@ export const Table = ({senddata}) => {
   const putdataintoinvoice = (e) =>{
      if(e.key.toLowerCase() === "enter"){
        setinvoice(invoice =>[...invoice,currentdata])
-       setcurrentdata({})
+       setcurrentdata(reset)
        console.log(currentdata)
      }
   }
@@ -76,7 +86,9 @@ export const Table = ({senddata}) => {
   const runqurey = () =>{
   }
    useEffect(()=>{
+     console.log(currentdata.length)
      console.log(currentdata)
+     console.log('here')
    },[currentdata])
 
   return (
@@ -108,9 +120,9 @@ export const Table = ({senddata}) => {
 
         <input ref={ref} className="input-same-1" id="Quantity" type="text" value={quantity} onChange={(e)=>{addquantity(e)}} onKeyDown={handleEnter} name="name" />
 
-        <input className="input-same-1" id="Bonus"  type="text" onKeyDown={handleEnter} value={(currentdata.length != 0 ) ? currentdata.Bonus :''} name="name" />
+        <input className="input-same-1" id="Bonus"  type="text" onKeyDown={handleEnter} value={(currentdata.length == 0) ? '': currentdata.Bonus} name="name" />
 
-        <input className="input-same-1" id="saleTax" type="text" onKeyDown={handleEnter} value={currentdata.STP} name="name" />
+        <input className="input-same-1" id="saleTax" type="text" onKeyDown={handleEnter} value={(currentdata.length == 0 ) ? '' :currentdata.STP} name="name" />
 
         <input className="input-same-1" id="Bonous" type="text" onKeyDown={handleEnter} value={currentdata.Bonus} name="name" />
 
