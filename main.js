@@ -1,83 +1,88 @@
-const path = require('path')
-const url = require('url')
-const { app, BrowserWindow } = require('electron')
+const path = require("path");
+const url = require("url");
+const { app, BrowserWindow } = require("electron");
 
-let mainWindow
+app.isPackaged || require("electron-reloader")(module);
 
-let isDev = false
+let mainWindow;
+
+let isDev = false;
 
 if (
-	process.env.NODE_ENV !== undefined &&
-	process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV !== undefined &&
+  process.env.NODE_ENV === "development"
 ) {
-	isDev = true
+  isDev = true;
 }
 
 function createMainWindow() {
-	mainWindow = new BrowserWindow({
-		width: 1100,
-		height: 800,
-		show: false,
-		icon: `${__dirname}/assets/icon.png`,
-		webPreferences: {
-			nodeIntegration: true,
-		},
-	})
+  mainWindow = new BrowserWindow({
+    width: 1100,
+    height: 800,
+    minWidth: 850,
+    minHeight: 560,
+    show: false,
+    icon: `${__dirname}/assets/icon.png`,
+    webPreferences: {
+      nodeIntegration: true,
 
-	let indexPath
+      contextIsolation: false,
+    },
+  });
 
-	if (isDev && process.argv.indexOf('--noDevServer') === -1) {
-		indexPath = url.format({
-			protocol: 'http:',
-			host: 'localhost:8080',
-			pathname: 'index.html',
-			slashes: true,
-		})
-	} else {
-		indexPath = url.format({
-			protocol: 'file:',
-			pathname: path.join(__dirname, 'dist', 'index.html'),
-			slashes: true,
-		})
-	}
-	
+  let indexPath;
 
-	mainWindow.loadURL(indexPath)
+  if (isDev && process.argv.indexOf("--noDevServer") === -1) {
+    indexPath = url.format({
+      protocol: "http:",
+      host: "localhost:8080",
+      pathname: "index.html",
+      slashes: true,
+    });
+  } else {
+    indexPath = url.format({
+      protocol: "file:",
+      pathname: path.join(__dirname, "dist", "index.html"),
+      slashes: true,
+    });
+  }
 
-	// Don't show until we are ready and loaded
-	mainWindow.once('ready-to-show', () => {
-		mainWindow.show()
+  mainWindow.loadURL(indexPath);
 
-		// Open devtools if dev
-		if (isDev) {
-			const {
-				default: installExtension,
-				REACT_DEVELOPER_TOOLS,
-			} = require('electron-devtools-installer')
+  // Don't show until we are ready and loaded
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
 
-			installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-				console.log('Error loading React DevTools: ', err)
-			)
-			mainWindow.webContents.openDevTools()
-		}
-	})
+    // Open devtools if dev
+    if (isDev) {
+      const {
+        default: installExtension,
+        REACT_DEVELOPER_TOOLS,
+      } = require("electron-devtools-installer");
 
-	mainWindow.on('closed', () => (mainWindow = null))
+      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
+        console.log("Error loading React DevTools: ", err)
+      );
+      mainWindow.webContents.openDevTools();
+    }
+  });
+
+  mainWindow.on("closed", () => (mainWindow = null));
 }
 
-app.on('ready', createMainWindow)
+app.on("ready", createMainWindow);
 
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-	}
-})
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
 
-app.on('activate', () => {
-	if (mainWindow === null) {
-		createMainWindow()
-	}
-})
+app.on("activate", () => {
+  if (mainWindow === null) {
+    createMainWindow();
+  }
+});
 
 // Stop error
-app.allowRendererProcessReuse = true
+app.allowRendererProcessReuse = true;

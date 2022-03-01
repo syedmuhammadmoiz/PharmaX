@@ -37,31 +37,45 @@ const Mainpage = () => {
             </div>
             <div className="card">
               <img src={bill_png} alt="invoice" />
-              <p>Invoice View</p>
+              <Link to="/InvoiceView">
+                <p>Invoice View</p>
+              </Link>
             </div>
             <div className="card">
               <img src={purchase_png} alt="invoice" />
-              <p>Stock Purchase</p>
+              <Link to="/StockPurchase">
+                <p>Stock Purchase</p>
+              </Link>
             </div>
             <div className="card">
               <img src={commission_png} alt="invoice" />
-              <p>Purchase View</p>
+              <Link to="/StockPurchaseView">
+                <p>Purchase View</p>
+              </Link>
             </div>
             <div className="card">
               <img src={return_png} alt="invoice" />
-              <p>Invoice Return</p>
+              <Link to="/InvoiceReturn">
+                <p>Invoice Return</p>
+              </Link>
             </div>
             <div className="card">
               <img src={trade_png} alt="invoice" />
-              <p>Inv. Return View</p>
+              <Link to="/InvoiceReturnView">
+                <p>Inv. Return View</p>
+              </Link>
             </div>
             <div className="card">
               <img src={purre_png} alt="invoice" />
-              <p>Purchase Return</p>
+              <Link to="/StockPurchaseReturn">
+                <p>Purchase Return</p>
+              </Link>
             </div>
             <div className="card">
               <img src={purrev_png} alt="invoice" />
-              <p>Pur. Return View</p>
+              <Link to="/StockPurchaseReturnView">
+                <p>Pur. Return View</p>
+              </Link>
             </div>
             <div className="card">
               <img src={analytics_png} alt="invoice" />

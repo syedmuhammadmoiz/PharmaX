@@ -1,35 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Table.css";
 
-export const Table = () => {
+const Table = ({ modalToggle }) => {
   return (
     <div className="input_table">
-      <div className="table-heading">Items</div>
-      <form className="enter">
-        <input className="input-same-4" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-3" type="text" name="name" />
-
-        <input className="input-same-2" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-1" type="text" name="name" />
-
-        <input className="input-same-2" type="text" name="name" />
-      </form>
       <table>
         <thead>
+          <tr className="enter">
+            <th>
+              <input className="input--1" type="text" name="name" />
+            </th>
+            <th>
+              <input
+                className="input-same-2"
+                type="text"
+                name="name"
+                onClick={modalToggle}
+              />
+            </th>
+            <th>
+              <input className="input-same-3" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-2" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-1" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-1" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-1" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-1" type="text" name="name" />
+            </th>
+            <th>
+              <input className="input-same-1" type="text" name="name" />
+            </th>
+            <th>
+              <input
+                className="input-same-2 last_input"
+                type="text"
+                name="name"
+              />
+            </th>
+          </tr>
+        </thead>
+        <thead>
           <tr>
-            <th className="input-same-4">SNO</th>
+            <th className="input--1 ">S.NO</th>
             <th className="input-same-1">Code</th>
             <th className="input-same-3">Item Name</th>
             <th className="input-same-2">Batch</th>
@@ -102,8 +123,22 @@ export const Table = () => {
             <td></td>
             <td></td>
           </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
     </div>
   );
 };
+
+export default Table;
