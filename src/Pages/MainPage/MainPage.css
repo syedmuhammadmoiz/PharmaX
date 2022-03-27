@@ -68,3 +68,8 @@
   font-size: 1.5rem;
   font-family: "Varela Round", sans-serif;
 }
+
+.link {
+  text-decoration: none;
+  color: #000;
+}

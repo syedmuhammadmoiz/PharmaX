@@ -28,55 +28,61 @@ const Mainpage = () => {
       <div className="align">
         <div className="left">
           <div className="para">Main Section</div>
-          <div className="cover">
-            <div className="card">
-              <img src={invoice_png} alt="invoice" />
-              <Link to="/Invoice">
+          <div className="cover ">
+            <Link to="/Invoice " className="link">
+              <div className="card">
+                <img src={invoice_png} alt="invoice" />
                 <p>Invoice</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={bill_png} alt="invoice" />
-              <Link to="/InvoiceView">
+              </div>
+            </Link>
+            <Link to="/InvoiceView" className="link">
+              <div className="card">
+                <img src={bill_png} alt="invoice" />
+
                 <p>Invoice View</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={purchase_png} alt="invoice" />
-              <Link to="/StockPurchase">
+              </div>
+            </Link>
+            <Link to="/StockPurchase" className="link">
+              <div className="card">
+                <img src={purchase_png} alt="invoice" />
                 <p>Stock Purchase</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={commission_png} alt="invoice" />
-              <Link to="/StockPurchaseView">
+              </div>
+            </Link>
+            <Link to="/StockPurchaseView" className="link">
+              <div className="card">
+                <img src={commission_png} alt="invoice" />
+
                 <p>Purchase View</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={return_png} alt="invoice" />
-              <Link to="/InvoiceReturn">
+              </div>
+            </Link>
+            <Link to="/InvoiceReturn" className="link">
+              <div className="card">
+                <img src={return_png} alt="invoice" />
+
                 <p>Invoice Return</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={trade_png} alt="invoice" />
-              <Link to="/InvoiceReturnView">
+              </div>
+            </Link>
+            <Link to="/InvoiceReturnView" className="link">
+              <div className="card">
+                <img src={trade_png} alt="invoice" />
+
                 <p>Inv. Return View</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={purre_png} alt="invoice" />
-              <Link to="/StockPurchaseReturn">
+              </div>
+            </Link>
+            <Link to="/StockPurchaseReturn" className="link">
+              <div className="card">
+                <img src={purre_png} alt="invoice" />
+
                 <p>Purchase Return</p>
-              </Link>
-            </div>
-            <div className="card">
-              <img src={purrev_png} alt="invoice" />
-              <Link to="/StockPurchaseReturnView">
+              </div>
+            </Link>
+            <Link to="/StockPurchaseReturnView" className="link">
+              <div className="card">
+                <img src={purrev_png} alt="invoice" />
+
                 <p>Pur. Return View</p>
-              </Link>
-            </div>
+              </div>
+            </Link>
             <div className="card">
               <img src={analytics_png} alt="invoice" />
               <p>Stock Cards</p>

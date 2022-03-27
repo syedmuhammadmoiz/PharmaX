@@ -5,8 +5,9 @@
   background-color: #ebecee;
   display: flex;
   flex-direction: column;
-  min-width: 15rem;
+  min-width: 15.75rem;
   transition: 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
 }
 
 .sideNav_cover_margin {
@@ -19,8 +20,15 @@
 .links {
   text-decoration: none;
   color: #000;
-  padding: 3rem 25% 0 25%;
+  margin: 3rem 25% 0 25%;
 }
+
+.first_link {
+  text-decoration: none;
+  color: #000;
+  margin: 3rem 25% 0 25%;
+}
+
 .links:hover,
 .links:focus {
   color: #4f87e6;
@@ -34,7 +42,29 @@
   .sideNav_cover {
     display: none;
   }
+  .close_button {
+    background-image: url(../../../../assets/img/close.png);
+    width: 1rem;
+    height: 1rem;
+    margin: 2rem 0 0 85%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
 
+  .first_link {
+    text-decoration: none;
+    color: #000;
+    margin: 1rem 25% 0 25%;
+  }
+  .sideNav_cover_open {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.4s ease-in-out;
+    z-index: 2;
+  }
   .sidebar_icon {
     background-image: url(../../../../assets/img/lists.png);
     background-size: contain;

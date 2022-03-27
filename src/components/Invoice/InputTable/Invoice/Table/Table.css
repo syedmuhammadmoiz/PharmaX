@@ -1,10 +1,13 @@
 .input_table {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
+  height: 20.4rem;
 }
 
 .input_table::-webkit-scrollbar {
   height: 5px;
+  width: 5px;
 }
 .input_table::-webkit-scrollbar-track {
   background-color: #f7f8f8;
@@ -19,7 +22,7 @@
 }
 
 .input--1 {
-  width: 3.4rem;
+  width: 3.2rem;
 }
 
 .input-same-1 {
@@ -43,7 +46,6 @@ table,
 td {
   border: 1px solid #d1d1d1;
   text-align: left;
-  background-color: white;
 }
 
 th {
@@ -86,4 +88,30 @@ tbody:last-child tr:last-child td:first-child {
   th {
     font-size: 0.85rem;
   }
+}
+
+tr:hover {
+  background-color: #ebf6fd;
+}
+
+.select_table td {
+  background-color: #ebf6fd;
+  border-style: double;
+  border-color: #4f87e6;
+}
+
+tr:focus {
+  outline: none;
+}
+.table_med th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+}
+.table_med .up th {
+  position: sticky;
+  top: 2.6rem;
+  z-index: 1;
+  background: #fff;
 }
