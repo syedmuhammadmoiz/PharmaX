@@ -1,4 +1,4 @@
-const sql = require("mssql")
+const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
   password: "1234567890",
@@ -10,16 +10,16 @@ const sqlConfig = {
     enableArithAbort: true,
     trustServerCertificate: true,
   },
-}
+};
 
 // Search medicine in database
 
 global.share.ipcMain.on("search", (event, arg) => {
-  var conn = new sql.ConnectionPool(sqlConfig)
+  var conn = new sql.ConnectionPool(sqlConfig);
   conn
     .connect()
     .then(function () {
-      var request = new sql.Request(conn)
+      var request = new sql.Request(conn);
       request
         .query(
           `select * from Stock where Name like '${arg}%' or Code like '${arg}'`
@@ -32,14 +32,14 @@ global.share.ipcMain.on("search", (event, arg) => {
           conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
+          console.log(err);
+          conn.close();
         });
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
+      console.log(err);
+    });
 });
 
 //Get salesman info
@@ -56,19 +56,19 @@ global.share.ipcMain.on("salesman", (event, arg) => {
           global.share.mainWindow.webContents.send(
             "salesman",
             recordset.recordset
-          )
-          conn.close()
+          );
+          conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
+          console.log(err);
+          conn.close();
         });
-      console.log("connection is created")
+      console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
+      console.log(err);
+    });
+});
 
 //Get invoice no.
 
@@ -85,10 +85,10 @@ global.share.ipcMain.on("invno", (event, arg) => {
             "invno",
             recordset.recordset
           );
-          conn.close()
+          conn.close();
         })
         .catch(function (err) {
-          console.log(err)
+          console.log(err);
           conn.close();
         });
       console.log("connection is created");
