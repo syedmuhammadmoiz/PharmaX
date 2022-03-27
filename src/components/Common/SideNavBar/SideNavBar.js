@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./sideNavBar.css";
-const SideNavBar = () => {
+const SideNavBar = ({ sideBar, sideBarToggle }) => {
   return (
     <>
-      <div className="sidebar_icon"></div>
-      <div className="sideNav_cover">
+      <div className="sidebar_icon" onClick={sideBarToggle}></div>
+
+      <div className={"sideNav_cover " + (sideBar ? "sideNav_cover_open" : "")}>
         <div className="sideNav_cover_margin">
-          <Link className="links " to="/">
+          <div className="close_button" onClick={sideBarToggle}></div>
+          <Link className="first_link" to="/">
             Main Menu
           </Link>
 

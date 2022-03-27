@@ -1,11 +1,12 @@
 const path = require("path");
 const url = require("url");
 const sql = require("mssql");
-const { app, BrowserWindow, ipcMain } = require("electron");
-
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 app.isPackaged || require("electron-reloader")(module);
 
 let mainWindow;
+
+global.share = { ipcMain };
 
 let isDev = false;
 
@@ -39,10 +40,11 @@ function createMainWindow() {
     icon: `${__dirname}/assets/icon.png`,
     webPreferences: {
       nodeIntegration: true,
-
+      enableremotemodule: true,
       contextIsolation: false,
     },
   });
+  global.share.mainWindow = mainWindow;
 
   let indexPath;
 
@@ -83,6 +85,12 @@ function createMainWindow() {
 
   mainWindow.on("closed", () => (mainWindow = null));
 }
+
+//show notification
+ipcMain.on("error", (event, arg) => {
+  console.log(arg)
+  dialog.showErrorBox("Error", arg);
+});
 
 app.on("ready", createMainWindow);
 
@@ -156,6 +164,8 @@ app.on("activate", () => {
     createMainWindow();
   }
 });
+
+require("./queries");
 
 // Stop error
 app.allowRendererProcessReuse = true;
