@@ -88,7 +88,7 @@ function createMainWindow() {
 
 //show notification
 ipcMain.on("error", (event, arg) => {
-  console.log(arg)
+  console.log(arg);
   dialog.showErrorBox("Error", arg);
 });
 
