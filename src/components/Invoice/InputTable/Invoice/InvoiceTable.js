@@ -23,8 +23,8 @@ const InvoiceTable = () => {
   const [time, setTime] = useState("");
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
-  const [sideBar, setSideBar] = useState(true)
-  const [saveinvoice,setsaveinvoice] = useState([])
+  const [sideBar, setSideBar] = useState(true);
+  const [saveinvoice, setsaveinvoice] = useState([]);
 
   var currentdate = new Date();
   var datetime =
@@ -69,7 +69,7 @@ const InvoiceTable = () => {
     e.preventDefault();
     if (customer.length === 0) {
       ipcRenderer.send("error", "Please select customer");
-    }else if(saveinvoice.length === 0){
+    } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
     }
   };
@@ -147,6 +147,7 @@ const InvoiceTable = () => {
                     style={{ textAlign: "center" }}
                   />
                   <input
+                    className="lastinput"
                     type="text"
                     name="name"
                     value={singleC.Contact}
@@ -159,7 +160,7 @@ const InvoiceTable = () => {
                   <label>Salesman:</label>
                   <label>Date:</label>
                   <label>Time:</label>
-                  <label>Invoice number:</label>
+                  <label className="last_lable">Invoice number:</label>
                 </div>
                 <div className="form_col">
                   <input
@@ -184,6 +185,7 @@ const InvoiceTable = () => {
                     style={{ textAlign: "center" }}
                   />
                   <input
+                    className="lastinput"
                     disabled
                     type="text"
                     name="name"
