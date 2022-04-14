@@ -19,47 +19,56 @@ const InvoiceView = () => {
   const [customers, setcustomers] = useState([])
   const [salesman, setSalesman] = useState("")
   const [date, setDate] = useState("")
-  const [invoice, setInvoice] = useState("")
   const [time, setTime] = useState("")
   const [netTotal, setNetTotal] = useState(0.0)
   const [tableSelect, setTableSelect] = useState()
   const [sideBar, setSideBar] = useState(true)
   const [saveinvoice, setsaveinvoice] = useState([])
+  const [invoiceno,setinvoiceno] = useState("")
+  const [datetime,setdateime] = useState("")
+  const [invoicev,setinvoicev] = useState([])
+  const [currentinvoicev,setcurrentinvoicev] = useState({
+    Batch: "43180",
+    Bon: "",
+    Code: "",
+    Dat: "",
+    Disc: "",
+    InvTime: "",
+    Name: "",
+    Qty: "",
+    SNO: "",
+    STP: "",
+    Stax: ""
+  })
 
-  var currentdate = new Date()
-  var datetime =
-    currentdate.getDate() +
-    "/" +
-    (currentdate.getMonth() + 1) +
-    "/" +
-    currentdate.getFullYear()
-
-  useMemo(() => {
-    setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000)
-  }, [])
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
     }
   }
-
+  
   const clearinvoice = useRef()
   const clearcurrent = useRef()
 
   ipcRenderer.on("salesman", (event, arg) => {
     setSalesman(arg[0].Name);
   })
-  ipcRenderer.on("invno", (event, arg) => {
-    setInvoice(arg[0].InvNo + 1);
+  ipcRenderer.on("searchinvno", (event, arg) => {
+     setinvoicev(arg)
   })
-  ipcRenderer.on("customer", (event, arg) => {
-    setcustomers(arg)
-    arg.map((item) => {
-      if (item.Name === customer) setsingleC(item)
-    })
+  ipcRenderer.on("invoice", (event, arg) => {
+    console.log(arg)
   })
+
+  const invoicekeydown = (e) => {
+    if (e.key === "Enter") {
+      if(invoiceno.length === 0){
+        ipcRenderer.send("error", "Please Enter the Invoice No")
+      }else{
+        ipcRenderer.send("searchinvno", invoiceno)
+      }
+    }
+  }
   
   //save to database
   const savetodatabase = (e) => {
@@ -71,12 +80,11 @@ const InvoiceView = () => {
     }
   }
   function callfunction() {}
+  const sideBarToggle = () => setSideBar(!sideBar)
 
-  const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
     ipcRenderer.send("salesman")
-    ipcRenderer.send("invno")
-     ipcRenderer.send("customer", customer)
+    ipcRenderer.send("customer", customer)
   }, [])
 
   return (
@@ -164,7 +172,7 @@ const InvoiceView = () => {
                     name="name"
                     value={salesman}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setDate(e.target.value)}
+                   
                   />
                   <input
                     disabled
@@ -186,8 +194,10 @@ const InvoiceView = () => {
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={invoice}
-                    readOnly
+                    value={invoiceno}
+                    onChange={(e) => setinvoiceno(e.target.value)}
+                    onKeyDown={(e) => {invoicekeydown(e)}}
+                    
                     style={{ textAlign: "center" }}
                   />
                 </div>

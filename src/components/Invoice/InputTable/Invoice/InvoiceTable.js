@@ -57,12 +57,12 @@ const InvoiceTable = () => {
   ipcRenderer.on("customer", (event, arg) => {
     setcustomers(arg);
     arg.map((item) => {
-      if (item.Name === customer) setsingleC(item);
+      if (item.Name === customer) setsingleC(item)
     });
   });
   const customerdropdown = (e) => {
     setCustomer(e.target.value);
-    ipcRenderer.send("customer", e.target.value);
+    ipcRenderer.send("customer", e.target.value)
   };
   //save to database
   const savetodatabase = (e) => {
