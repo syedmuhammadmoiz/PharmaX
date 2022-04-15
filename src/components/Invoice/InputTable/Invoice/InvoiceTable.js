@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useImperativeHandle,
 } from "react";
+import { useParams } from "react-router-dom";
 import Table from "./Table/Table";
 import invoice_png from "../../../../../assets/img/invoice.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
@@ -25,6 +26,7 @@ const InvoiceTable = () => {
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [saveinvoice, setsaveinvoice] = useState([]);
+  const { id } = useParams();
 
   var currentdate = new Date();
   var datetime =
@@ -57,12 +59,13 @@ const InvoiceTable = () => {
   ipcRenderer.on("customer", (event, arg) => {
     setcustomers(arg);
     arg.map((item) => {
-      if (item.Name === customer) setsingleC(item)
+      if (item.Name === customer) setsingleC(item);
     });
   });
+
   const customerdropdown = (e) => {
     setCustomer(e.target.value);
-    ipcRenderer.send("customer", e.target.value)
+    ipcRenderer.send("customer", e.target.value);
   };
   //save to database
   const savetodatabase = (e) => {
@@ -80,7 +83,12 @@ const InvoiceTable = () => {
   useEffect(() => {
     ipcRenderer.send("salesman");
     ipcRenderer.send("customer");
-    ipcRenderer.send("invno");
+    if (id !== undefined && id !== null && id !== "" && id !== "0") {
+      ipcRenderer.send("searchinvno", id);
+      setInvoice(id);
+    } else {
+      ipcRenderer.send("invno");
+    }
   }, []);
 
   return (
@@ -235,6 +243,7 @@ const InvoiceTable = () => {
                 >
                   Delete
                 </button>
+
                 <Link to="/">
                   <button className="button_border">Exit</button>
                 </Link>

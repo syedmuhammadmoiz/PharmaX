@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-import ModalView from "../Modal/ModalView";
-import { ipcRenderer } from "electron";
 import "./tableView.css";
 
 const Emptytables = ({ length }) => {
@@ -31,14 +29,9 @@ const TableView = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
-  currentinvoicev
+  invoicev,
 }) => {
-  const [show, setShow] = useState(false); //show model
-  var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
-  const modalToggle = () => setShow(!show);
-  const ref = useRef();
-
 
   const tableSelectToggle = (index) => {
     setTableSelect(index);
@@ -56,23 +49,13 @@ const TableView = ({
     } else if (e.keyCode === 13) {
       onDoubleClicktoedit(index);
     }
-  }
+  };
   useEffect(() => {
-    (currentinvoicev.length > 0) ? console.log(currentinvoicev) : setinvoice([])
-  }, [currentinvoicev])
+    invoicev.length > 0 ? setinvoice(invoicev) : setinvoice([]);
+  }, [invoicev]);
 
   return (
     <div className="input_table ">
-      {show ? (
-        <ModalView
-          modalToggle={modalToggle}
-          setShow={setShow}
-          data={data}
-          senddatatoinvoice={senddatatoinvoice}
-          setdata={setdata}
-        />
-      ) : null}
-
       <table className="table_med">
         <thead>
           <tr onClick={clickToUnSelectTableRow}>
@@ -104,12 +87,12 @@ const TableView = ({
                   <td>{item.Name}</td>
                   <td className="center">{item.Batch}</td>
                   <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
-                  <td className="center">{item.Bonus}</td>
+                  <td className="center">{item.Bon}</td>
                   <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
-                  <td className="center">{item.Quantity}</td>
-                  <td className="center">{item.Disc1}</td>
+                  <td className="center">{item.Qty}</td>
+                  <td className="center">{item.Disc}</td>
                   <td className="center">
-                    {parseFloat(item.Total.toFixed(2))}
+                    {parseFloat(item.STP * item.Qty).toFixed(2)}
                   </td>
                 </tr>
               ))

@@ -1,4 +1,4 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./Modal.css";
 import Close from "../../../../../../assets/img/close.png";
 import { ipcRenderer } from "electron";
@@ -23,35 +23,29 @@ const EmptyModaltables = ({ length }) => {
 
 const Modal = ({ modalToggle, setShow, senddatatoinvoice, data, setdata }) => {
   const [search, setsearch] = useState("");
-  const [modalRow, setModalRow] = useState(0)
-  const ref = useRef()
-
-
+  const [modalRow, setModalRow] = useState(0);
+  const ref = useRef();
 
   //Selecting Table Index
   const tableSelectModalToggle = (index) => {
     setModalRow(index);
-    ref.current?.focus()
+    ref.current?.focus();
   };
 
   //Nagivating UP and down in table by press up and down arrow keys using table index
-  const handleKeyDown = (e,item) => {
-
+  const handleKeyDown = (e, item) => {
     if (e.keyCode === 38) {
       if (modalRow + 1 > 1) {
-        tableSelectModalToggle(modalRow - 1)
+        tableSelectModalToggle(modalRow - 1);
       }
     } else if (e.keyCode === 40) {
       if (modalRow + 1 < data.length) {
-        tableSelectModalToggle(modalRow + 1)
+        tableSelectModalToggle(modalRow + 1);
       }
+    } else if (e.keyCode === 13) {
+      senddatatoinvoice(data[modalRow]);
     }
-    else if(e.keyCode === 13){
-
-      senddatatoinvoice(data[modalRow])
-    }
-
-  }
+  };
 
   //search medicine into database
   const searchdata = (e) => {
@@ -75,9 +69,9 @@ const Modal = ({ modalToggle, setShow, senddatatoinvoice, data, setdata }) => {
       setShow(false);
     }
   };
-    useEffect(()=>{
-      ref.current?.focus()
-  },[])
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
   return (
     <div className="modal_cover" onClick={closeModalIfClickedOutside}>
       <div className="modal">
@@ -124,11 +118,15 @@ const Modal = ({ modalToggle, setShow, senddatatoinvoice, data, setdata }) => {
                         onClick={() => tableSelectModalToggle(index)}
                         onDoubleClick={() => senddatatoinvoice(item)}
                         tabindex={index}
-                        onKeyDown={(e)=>{handleKeyDown(e,item)}}
+                        onKeyDown={(e) => {
+                          handleKeyDown(e, item);
+                        }}
                       >
                         <td className="center">{item.Code}</td>
                         <td>{item.Name}</td>
-                        <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
+                        <td className="center">
+                          {parseFloat(item.STP.toFixed(2))}
+                        </td>
                         <td className="center">{item.Qty}</td>
                       </tr>
                     ))}

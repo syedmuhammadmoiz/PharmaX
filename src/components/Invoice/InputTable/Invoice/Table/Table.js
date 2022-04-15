@@ -88,7 +88,6 @@ const Table = ({
     setquantity(invoice[index].Quantity);
     setdisc(invoice[index].Disc1);
     setinvoice(invoice);
-    console.log(currentdata);
   };
 
   //handle the next input move if input is empty it can't move
@@ -142,7 +141,27 @@ const Table = ({
   ipcRenderer.on("search", (event, arg) => {
     setdata(arg);
   });
-
+  ipcRenderer.on("searchinvno", (event, arg) => {
+    if (arg.length > 0) {
+      const data = arg.map((element) => ({
+        Batch: element.Batch,
+        Bonus: -1,
+        Code: element.Code,
+        Cost: 0,
+        Disc1: 0,
+        Name: element.Name,
+        Price: element.STP,
+        Quantity: element.Qty,
+        STP: element.STP,
+        Total: element.STP * element.Qty,
+        TP: element.STP,
+        selected: false,
+        SNO: element.SNO,
+        Stax: 0.0,
+      }));
+      setinvoice(data);
+    }
+  });
   //generating the invoice
   const senddatatoinvoice = (item) => {
     setShow(!show);
@@ -260,6 +279,7 @@ const Table = ({
   const runqurey = () => {};
 
   useEffect(() => {
+    console.log(invoice);
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
         return item.Code != currentdata.Code;

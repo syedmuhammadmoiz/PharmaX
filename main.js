@@ -9,8 +9,6 @@ global.share = { ipcMain };
 
 let isDev = false;
 
-
-
 if (
   process.env.NODE_ENV !== undefined &&
   process.env.NODE_ENV === "development"
@@ -81,8 +79,6 @@ ipcMain.on("error", (event, arg) => {
 });
 
 app.on("ready", createMainWindow);
-
-
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

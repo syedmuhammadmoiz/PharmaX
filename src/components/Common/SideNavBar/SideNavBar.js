@@ -13,7 +13,7 @@ const SideNavBar = ({ sideBar, sideBarToggle }) => {
             Main Menu
           </Link>
 
-          <Link className="links" to="/Invoice">
+          <Link className="links" to="/Invoice/0">
             Invoice
           </Link>
 

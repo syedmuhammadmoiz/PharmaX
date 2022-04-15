@@ -15,7 +15,7 @@ const sqlConfig = {
 // Search medicine in database
 
 global.share.ipcMain.on("search", (event, arg) => {
-  var conn = new sql.ConnectionPool(sqlConfig)
+  var conn = new sql.ConnectionPool(sqlConfig);
   conn
     .connect()
     .then(function () {
@@ -29,18 +29,18 @@ global.share.ipcMain.on("search", (event, arg) => {
             "search",
             recordset.recordset
           );
-          conn.close()
+          conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
+          console.log(err);
+          conn.close();
         });
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
+      console.log(err);
+    });
+});
 
 //Get salesman info
 
@@ -60,15 +60,15 @@ global.share.ipcMain.on("salesman", (event, arg) => {
           conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
+          console.log(err);
+          conn.close();
         });
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
+      console.log(err);
+    });
+});
 
 //Get invoice no.
 
@@ -94,9 +94,9 @@ global.share.ipcMain.on("invno", (event, arg) => {
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
+      console.log(err);
+    });
+});
 
 // Customer records
 global.share.ipcMain.on("customer", (event, arg) => {
@@ -114,19 +114,18 @@ global.share.ipcMain.on("customer", (event, arg) => {
             "customer",
             recordset.recordset
           );
-          conn.close()
+          conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
+          console.log(err);
+          conn.close();
         });
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
-
+      console.log(err);
+    });
+});
 
 // Search invoice by invoice no.
 
@@ -138,22 +137,22 @@ global.share.ipcMain.on("searchinvno", (event, arg) => {
       var request = new sql.Request(conn);
       request
         .query(
-          `select Invoice.SNO, Invoice.Code, Invoice.Name, Invoice.Batch, Invoice.STP, Invoice.Bon, Invoice.Stax, Invoice.Qty, Invoice.Disc,InvM.InvTime, InvM.Dat from Invoice, InvM  where Invoice.Invno = ${arg} and InvM.InvNo = ${arg}`
+          `SELECT  InvM.InvNo,Invoice.SNO, Invoice.Code, Invoice.Name, Invoice.Batch, Invoice.STP, Invoice.Bon, Invoice.Stax, Invoice.Qty, Invoice.Disc,InvM.InvTime, InvM.Dat  from Invoice INNER JOIN InvM ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
         )
         .then(function (recordset) {
           global.share.mainWindow.webContents.send(
             "searchinvno",
             recordset.recordset
           );
-          conn.close()
+          conn.close();
         })
         .catch(function (err) {
-          console.log(err)
-          conn.close()
-        })
+          console.log(err);
+          conn.close();
+        });
       console.log("connection is created");
     })
     .catch(function (err) {
-      console.log(err)
-    })
-})
+      console.log(err);
+    });
+});

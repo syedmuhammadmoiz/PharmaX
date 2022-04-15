@@ -1,90 +1,83 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-} from "react"
-import TableView from "./Table/TableView"
-import bill_png from "../../../../../assets/img/bill.png"
-import SideNavBar from "../../../Common/SideNavBar/SideNavBar"
-import TopNavBar from "../../../Common/TopNavBar/TopNavBar"
-import { Link, NavLink } from "react-router-dom"
-import "./invoiceView.css"
-import { ipcRenderer } from "electron"
-
+import React, { useState, useEffect } from "react";
+import TableView from "./Table/TableView";
+import bill_png from "../../../../../assets/img/bill.png";
+import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
+import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
+import { Link } from "react-router-dom";
+import "./invoiceView.css";
+import { ipcRenderer } from "electron";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceView = () => {
-  const [customer, setCustomer] = useState("General")
-  const [singleC, setsingleC] = useState({})
-  const [customers, setcustomers] = useState([])
-  const [salesman, setSalesman] = useState("")
-  const [date, setDate] = useState("")
-  const [time, setTime] = useState("")
-  const [netTotal, setNetTotal] = useState(0.0)
-  const [tableSelect, setTableSelect] = useState()
-  const [sideBar, setSideBar] = useState(true)
-  const [saveinvoice, setsaveinvoice] = useState([])
-  const [invoiceno,setinvoiceno] = useState("")
-  const [datetime,setdateime] = useState("")
-  const [invoicev,setinvoicev] = useState([])
-  const [currentinvoicev,setcurrentinvoicev] = useState({
-    Batch: "43180",
-    Bon: "",
-    Code: "",
-    Dat: "",
-    Disc: "",
-    InvTime: "",
-    Name: "",
-    Qty: "",
-    SNO: "",
-    STP: "",
-    Stax: ""
-  })
+  const [customer, setCustomer] = useState("General");
+  const [singleC, setsingleC] = useState({});
+  const [customers, setcustomers] = useState([]);
+  const [salesman, setSalesman] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [tableSelect, setTableSelect] = useState();
+  const [sideBar, setSideBar] = useState(true);
+  const [invoiceno, setinvoiceno] = useState("");
+  const [invoicev, setinvoicev] = useState([]);
+  const [total, settotal] = useState(0.0);
 
+  const nevigate = useNavigate();
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
     }
-  }
-  
-  const clearinvoice = useRef()
-  const clearcurrent = useRef()
+  };
 
   ipcRenderer.on("salesman", (event, arg) => {
     setSalesman(arg[0].Name);
-  })
+  });
   ipcRenderer.on("searchinvno", (event, arg) => {
-     setcurrentinvoicev(arg)
-  })
+    if (arg.length > 0) {
+      setinvoicev(arg);
+      let InvDate = new Date(arg[0].Dat);
+      setDate(InvDate.toLocaleDateString());
+      setTime(arg[0].InvTime);
+      settotal(arg.reduce((total, item) => total + item.STP * item.Qty, 0));
+    } else {
+    }
+  });
   ipcRenderer.on("customer", (event, arg) => {
-    setsingleC(arg[0])
-  })
+    setsingleC(arg[0]);
+  });
 
   const invoicekeydown = (e) => {
     if (e.key === "Enter") {
-      if(invoiceno.length === 0){
-        ipcRenderer.send("error", "Please Enter the Invoice No")
-      }else{
-        ipcRenderer.send("searchinvno", invoiceno)
+      if (invoiceno.length === 0) {
+        ipcRenderer.send("error", "Please Enter the Invoice No");
+      } else {
+        ipcRenderer.send("searchinvno", invoiceno);
       }
     }
-  }
-  
+  };
+  //clear current data from table
+  const cleardata = () => {
+    setinvoicev([]);
+    setinvoiceno("");
+    setDate("");
+    setTime("");
+  };
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
-    if (customer.length === 0) {
-      ipcRenderer.send("error", "Please select customer")
-    } else if (saveinvoice.length === 0) {
-      ipcRenderer.send("error", "Please select the Medicine")
+    if (invoicev.length == 0) {
+      console.log("here");
+      ipcRenderer.send("error", "Please select the Invoice to Edit");
+    } else {
+      nevigate(`/invoice/${invoiceno}`);
     }
-  }
+  };
   function callfunction() {}
-  const sideBarToggle = () => setSideBar(!sideBar)
+  const sideBarToggle = () => setSideBar(!sideBar);
 
   useEffect(() => {
-    ipcRenderer.send("salesman")
-    ipcRenderer.send("customer", customer)
-  }, [])
+    ipcRenderer.send("salesman");
+    ipcRenderer.send("customer", customer);
+  }, []);
 
   return (
     <>
@@ -175,7 +168,7 @@ const InvoiceView = () => {
                     disabled
                     type="text"
                     name="name"
-                    value={datetime}
+                    value={date}
                     readOnly
                     style={{ textAlign: "center" }}
                   />
@@ -193,7 +186,9 @@ const InvoiceView = () => {
                     name="name"
                     value={invoiceno}
                     onChange={(e) => setinvoiceno(e.target.value)}
-                    onKeyDown={(e) => {invoicekeydown(e)}}
+                    onKeyDown={(e) => {
+                      invoicekeydown(e);
+                    }}
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -202,43 +197,32 @@ const InvoiceView = () => {
             <hr className="dotted" />
           </div>
           <TableView
-            clearinvoice={clearinvoice}
-            clearcurrent={clearcurrent}
             callfunction={callfunction}
             tableSelect={tableSelect}
             setTableSelect={setTableSelect}
-            setNetTotal={setNetTotal}
             clickToUnSelectTableRow={clickToUnSelectTableRow}
-            setsaveinvoice={setsaveinvoice}
-            currentinvoicev={currentinvoicev}
+            invoicev={invoicev}
           />
           <div onClick={clickToUnSelectTableRow}>
             <hr className="dotted" />
             <div className="table_buttons">
-              <div className="buttons">
+              <div className="buttons_view">
                 <button
                   className="button_main"
                   onClick={(e) => {
                     savetodatabase(e);
                   }}
                 >
-                  Save
+                  Edit
                 </button>
+
                 <button
                   className="button_border "
                   onClick={(e) => {
-                    clearinvoice.current();
+                    cleardata(e);
                   }}
                 >
                   Clear
-                </button>
-                <button
-                  className="button_border"
-                  onClick={(e) => {
-                    clearcurrent.current();
-                  }}
-                >
-                  Edit
                 </button>
                 <Link to="/">
                   <button className="button_border">Exit</button>
@@ -254,7 +238,7 @@ const InvoiceView = () => {
                   <div> 0.00</div>
                   <div> 0.00</div>
                   <div className="final_total">
-                    {parseFloat(netTotal.toFixed(2))}
+                    {parseFloat(total.toFixed(2))}
                   </div>
                 </div>
               </div>
@@ -263,7 +247,7 @@ const InvoiceView = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default InvoiceView;

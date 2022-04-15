@@ -29,7 +29,7 @@ const Mainpage = () => {
         <div className="left">
           <div className="para">Main Section</div>
           <div className="cover ">
-            <Link to="/Invoice " className="link">
+            <Link to="/Invoice/0" className="link">
               <div className="card">
                 <img src={invoice_png} alt="invoice" />
                 <p>Invoice</p>
