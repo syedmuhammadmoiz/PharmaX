@@ -31,16 +31,14 @@ const TableView = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
+  currentinvoicev
 }) => {
   const [show, setShow] = useState(false); //show model
-  const [search, setsearch] = useState(""); //search input
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
-  const [disc, setdisc] = useState(""); //discount
-
-  const [quantity, setquantity] = useState(null); //quantity of medicine
   const modalToggle = () => setShow(!show);
   const ref = useRef();
+
 
   const tableSelectToggle = (index) => {
     setTableSelect(index);
@@ -58,7 +56,10 @@ const TableView = ({
     } else if (e.keyCode === 13) {
       onDoubleClicktoedit(index);
     }
-  };
+  }
+  useEffect(() => {
+    (currentinvoicev.length > 0) ? console.log(currentinvoicev) : setinvoice([])
+  }, [currentinvoicev])
 
   return (
     <div className="input_table ">

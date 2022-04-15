@@ -2,16 +2,15 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useMemo,
-  useImperativeHandle,
-} from "react";
-import TableView from "./Table/TableView";
-import bill_png from "../../../../../assets/img/bill.png";
-import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
-import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
-import { Link, NavLink } from "react-router-dom";
-import "./invoiceView.css";
-import { ipcRenderer } from "electron";
+} from "react"
+import TableView from "./Table/TableView"
+import bill_png from "../../../../../assets/img/bill.png"
+import SideNavBar from "../../../Common/SideNavBar/SideNavBar"
+import TopNavBar from "../../../Common/TopNavBar/TopNavBar"
+import { Link, NavLink } from "react-router-dom"
+import "./invoiceView.css"
+import { ipcRenderer } from "electron"
+
 
 const InvoiceView = () => {
   const [customer, setCustomer] = useState("General")
@@ -54,10 +53,10 @@ const InvoiceView = () => {
     setSalesman(arg[0].Name);
   })
   ipcRenderer.on("searchinvno", (event, arg) => {
-     setinvoicev(arg)
+     setcurrentinvoicev(arg)
   })
-  ipcRenderer.on("invoice", (event, arg) => {
-    console.log(arg)
+  ipcRenderer.on("customer", (event, arg) => {
+    setsingleC(arg[0])
   })
 
   const invoicekeydown = (e) => {
@@ -143,7 +142,6 @@ const InvoiceView = () => {
                     style={{ textAlign: "center" }}
                     onChange={(e) => setCustomer(e.target.value)}
                   />
-
                   <input
                     type="text"
                     name="name"
@@ -172,7 +170,6 @@ const InvoiceView = () => {
                     name="name"
                     value={salesman}
                     style={{ textAlign: "center" }}
-                   
                   />
                   <input
                     disabled
@@ -197,7 +194,6 @@ const InvoiceView = () => {
                     value={invoiceno}
                     onChange={(e) => setinvoiceno(e.target.value)}
                     onKeyDown={(e) => {invoicekeydown(e)}}
-                    
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -214,6 +210,7 @@ const InvoiceView = () => {
             setNetTotal={setNetTotal}
             clickToUnSelectTableRow={clickToUnSelectTableRow}
             setsaveinvoice={setsaveinvoice}
+            currentinvoicev={currentinvoicev}
           />
           <div onClick={clickToUnSelectTableRow}>
             <hr className="dotted" />
@@ -266,7 +263,7 @@ const InvoiceView = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 export default InvoiceView;
