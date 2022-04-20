@@ -156,3 +156,9 @@ global.share.ipcMain.on("searchinvno", (event, arg) => {
       console.log(err);
     });
 });
+
+// Save Medicine into database
+
+global.share.ipcMain.on("saveintodatabase", (event, arg) => {
+  console.log(arg);
+});

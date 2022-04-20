@@ -35,12 +35,15 @@ const Table = ({
   clearinvoice,
   clearcurrent,
   setsaveinvoice,
+  Invoice,
+  saveinvoice,
 }) => {
   const [show, setShow] = useState(false); //show model
   const [search, setsearch] = useState(""); //search input
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
+  var [newinvoice, setnewinvoice] = useState([]); //new invoice data
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -160,6 +163,10 @@ const Table = ({
         Stax: 0.0,
       }));
       setinvoice(data);
+      setsaveinvoice((saveinvoice) => ({
+        ...saveinvoice,
+        invoiceEdit: data,
+      }));
     }
   });
   //generating the invoice
@@ -183,6 +190,7 @@ const Table = ({
     setdisc(0);
     ref.current?.focus();
   };
+
   //generating invoice
   const putdataintoinvoice = (e) => {
     if (e.key.toLowerCase() === "enter") {
@@ -190,10 +198,12 @@ const Table = ({
         billcalculation();
         setcurrentdata((currentdata) => ({
           ...currentdata,
-          Total: quantity * currentdata.Total,
+          Total: quantity * currentdata.STP,
           Quantity: quantity,
           Disc1: disc,
           selected: false,
+          invoiceno: Invoice,
+          profit: currentdata.Total - currentdata.Cost * quantity,
         }));
         setquantity(null);
         setsearch("");
@@ -245,6 +255,7 @@ const Table = ({
     setquantity("");
     setcurrentdata(reset);
     setTableSelect(null);
+    ipcRenderer.send("invno");
   }
   function clearcurrentdata() {
     if (tableSelect != null) {
@@ -275,21 +286,40 @@ const Table = ({
     }
   };
 
-  // save invoice to database
-  const runqurey = () => {};
-
   useEffect(() => {
-    console.log(invoice);
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
         return item.Code != currentdata.Code;
       });
       setinvoice([...filter, currentdata]);
-      setsaveinvoice([...filter, currentdata]);
+      let data = saveinvoice.invoiceEdit;
+      let check = data.some((item) => item.Code === currentdata.Code);
+      if (check) {
+        data = data.filter((item) => {
+          return item.Code != currentdata.Code;
+        });
+        data.push(currentdata);
+        setsaveinvoice((saveinvoice) => ({
+          ...saveinvoice,
+          invoiceEdit: data,
+        }));
+      } else {
+        let data = saveinvoice.newInvoice;
+        data = data.filter((item) => {
+          return item.Code != currentdata.Code;
+        });
+        data.push(currentdata);
+        setsaveinvoice((saveinvoice) => ({
+          ...saveinvoice,
+          newInvoice: data,
+        }));
+      }
+
+      // setsaveinvoice([...filter, currentdata]);
       setcurrentdata(reset);
     }
     setNetTotal(invoice.reduce((total, item) => total + item.Total, 0));
-  }, [currentdata, invoice]);
+  }, [currentdata, invoice, saveinvoice]);
 
   return (
     <div className="input_table">

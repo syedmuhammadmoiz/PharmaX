@@ -25,7 +25,14 @@ const InvoiceTable = () => {
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [saveinvoice, setsaveinvoice] = useState([]);
+  const [saveinvoice, setsaveinvoice] = useState({
+    invNo: "",
+    invoiceEdit: [],
+    newInvoice: [],
+    totalMedicine: 0,
+    RandomNo: "",
+  });
+  const [notdelete, setnotelete] = useState(false);
   const { id } = useParams();
 
   var currentdate = new Date();
@@ -55,6 +62,10 @@ const InvoiceTable = () => {
   });
   ipcRenderer.on("invno", (event, arg) => {
     setInvoice(arg[0].InvNo + 1);
+    setsaveinvoice((saveinvoice) => ({
+      ...saveinvoice,
+      invNo: arg[0].InvNo + 1,
+    }));
   });
   ipcRenderer.on("customer", (event, arg) => {
     setcustomers(arg);
@@ -74,6 +85,24 @@ const InvoiceTable = () => {
       ipcRenderer.send("error", "Please select customer");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
+    } else {
+      const randomString = () => {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (var i = 0; i < 20; i++) {
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+      }
+      let data ={
+        InvNo: saveinvoice.invNo,
+        invoiceEdit: saveinvoice.invoiceEdit,
+        newInvoice: saveinvoice.newInvoice,
+        RandomNo: randomString(),
+        totalMedicine:   saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
+      }
+      console.log(setsaveinvoice);
+      ipcRenderer.send("saveintodatabase", data);
     }
   };
 
@@ -85,7 +114,12 @@ const InvoiceTable = () => {
     ipcRenderer.send("customer");
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchinvno", id);
+      setsaveinvoice((saveinvoice) => ({
+        ...saveinvoice,
+        invNo: id,
+      }));
       setInvoice(id);
+      setnotelete(true);
     } else {
       ipcRenderer.send("invno");
     }
@@ -214,6 +248,8 @@ const InvoiceTable = () => {
             setNetTotal={setNetTotal}
             clickToUnSelectTableRow={clickToUnSelectTableRow}
             setsaveinvoice={setsaveinvoice}
+            saveinvoice={saveinvoice}
+            Invoice={invoice}
           />
           <div onClick={clickToUnSelectTableRow}>
             <hr className="dotted" />
@@ -236,6 +272,7 @@ const InvoiceTable = () => {
                   Clear
                 </button>
                 <button
+                  disabled={notdelete}
                   className="button_border"
                   onClick={(e) => {
                     clearcurrent.current();
