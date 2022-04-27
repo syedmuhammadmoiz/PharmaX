@@ -137,7 +137,10 @@ global.share.ipcMain.on("searchinvno", (event, arg) => {
       var request = new sql.Request(conn);
       request
         .query(
-          `SELECT  InvM.InvNo,Invoice.SNO, Invoice.Code, Invoice.Name, Invoice.Batch, Invoice.STP, Invoice.Bon, Invoice.Stax, Invoice.Qty, Invoice.Disc,InvM.InvTime, InvM.Dat  from Invoice INNER JOIN InvM ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
+          `SELECT  InvM.RNDT,InvM.InvNo,Invoice.SNO, Invoice.Code, Invoice.Name, Invoice.Batch, Invoice.STP, Invoice.Bon, Invoice.Stax, Invoice.Qty, Invoice.Disc,InvM.InvTime, InvM.Dat 
+from Invoice
+INNER JOIN InvM
+ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
         )
         .then(function (recordset) {
           global.share.mainWindow.webContents.send(
@@ -160,5 +163,38 @@ global.share.ipcMain.on("searchinvno", (event, arg) => {
 // Save Medicine into database
 
 global.share.ipcMain.on("saveintodatabase", (event, arg) => {
-  console.log(arg);
+ console.log(arg)
+//  const inth = parseInt(arg.InvNo);
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(
+          `
+          DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
+          DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
+          EXECUTE Generate_invoice @files=@f, @insert = @i,@total = ${arg.totalMedicine}, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo};
+          `
+        )
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "searchinvno",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
 });
+
+
+

@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useRef,
   useMemo,
-  useImperativeHandle,
 } from "react";
 import { useParams } from "react-router-dom";
 import Table from "./Table/Table";
@@ -31,7 +30,8 @@ const InvoiceTable = () => {
     newInvoice: [],
     totalMedicine: 0,
     RandomNo: "",
-  });
+  })
+ 
   const [notdelete, setnotelete] = useState(false);
   const { id } = useParams();
 
@@ -54,17 +54,26 @@ const InvoiceTable = () => {
     }
   };
 
-  const clearinvoice = useRef();
-  const clearcurrent = useRef();
+  const clearinvoice = useRef()
+  const clearcurrent = useRef()
 
   ipcRenderer.on("salesman", (event, arg) => {
     setSalesman(arg[0].Name);
   });
+   const randomString = () => {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (var i = 0; i < 20; i++) {
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+      }
   ipcRenderer.on("invno", (event, arg) => {
     setInvoice(arg[0].InvNo + 1);
     setsaveinvoice((saveinvoice) => ({
       ...saveinvoice,
       invNo: arg[0].InvNo + 1,
+      RandomNo: randomString()
     }));
   });
   ipcRenderer.on("customer", (event, arg) => {
@@ -79,39 +88,39 @@ const InvoiceTable = () => {
     ipcRenderer.send("customer", e.target.value);
   };
   //save to database
-  const savetodatabase = (e) => {
+  const savetodatabase =  (e) => {
     e.preventDefault();
     if (customer.length === 0) {
       ipcRenderer.send("error", "Please select customer");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
     } else {
-      const randomString = () => {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        for (var i = 0; i < 20; i++) {
-          text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return text;
-      }
-      let data ={
+       let data ={
         InvNo: saveinvoice.invNo,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
-        RandomNo: randomString(),
+        RandomNo: saveinvoice.RandomNo,
         totalMedicine:   saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
       }
-      console.log(setsaveinvoice);
       ipcRenderer.send("saveintodatabase", data);
-    }
+      setInvoice(saveinvoice.invNo + 1)
+      setsaveinvoice({
+        invNo: "",
+        invoiceEdit: [],
+        newInvoice: [],
+        totalMedicine: 0,
+        RandomNo: "",
+      })
+      setNetTotal(0)
+      }
   };
 
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer");
+    ipcRenderer.send("salesman")
+    ipcRenderer.send("customer")
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchinvno", id);
       setsaveinvoice((saveinvoice) => ({

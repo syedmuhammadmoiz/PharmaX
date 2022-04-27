@@ -43,7 +43,6 @@ const Table = ({
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
-  var [newinvoice, setnewinvoice] = useState([]); //new invoice data
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -108,8 +107,8 @@ const Table = ({
   };
 
   function useFocusNext() {
-    const controls = useRef([]);
 
+    const controls = useRef([])
     const handler = (event) => {
       if (event.keyCode === 13) {
         // Required if the controls can be reordered
@@ -120,18 +119,19 @@ const Table = ({
               ? -1
               : 1
           );
-        const index = controls.current.indexOf(event.target);
-        const next = controls.current[index + 1];
-        next && next.focus();
-        event.preventDefault();
+        const index = controls.current.indexOf(event.target)
+        const next = controls.current[index + 1]
+        next && next.focus()
+        event.preventDefault()
       }
-    };
+    }
     return useCallback((element) => {
       if (element && !controls.current.includes(element)) {
-        controls.current.push(element);
-        element.addEventListener("keydown", handler);
+        controls.current.push(element)
+        element.addEventListener("keydown", handler)
       }
-    }, []);
+    }, [])
+
   }
 
   const focusNextRef = useFocusNext();
@@ -144,6 +144,7 @@ const Table = ({
   ipcRenderer.on("search", (event, arg) => {
     setdata(arg);
   });
+
   ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
       const data = arg.map((element) => ({
@@ -160,12 +161,14 @@ const Table = ({
         TP: element.STP,
         selected: false,
         SNO: element.SNO,
+        RNDT:element.RNDT,
         Stax: 0.0,
       }));
       setinvoice(data);
       setsaveinvoice((saveinvoice) => ({
         ...saveinvoice,
         invoiceEdit: data,
+        RandomNo:data[0].RNDT,  
       }));
     }
   });
@@ -177,11 +180,11 @@ const Table = ({
       SNO: item.SNO,
       Bonus: item.Bonus,
       Code: item.Code,
-      STP: item.STP,
-      Cost: item.Cost,
-      TP: item.TP,
-      Price: item.Price,
+      STP: Math.floor(item.STP),
+      Cost: Math.floor(item.Cost),
+      TP: Math.floor(item.TP),
       Name: item.Name,
+      Price: Math.floor(item.Price),
       Disc1: item.Disc1,
       Stax: item.Stax,
       Batch: item.Batch,
@@ -198,12 +201,13 @@ const Table = ({
         billcalculation();
         setcurrentdata((currentdata) => ({
           ...currentdata,
-          Total: quantity * currentdata.STP,
+          Total: Math.floor(quantity * currentdata.STP),
           Quantity: quantity,
           Disc1: disc,
           selected: false,
           invoiceno: Invoice,
-          profit: currentdata.Total - currentdata.Cost * quantity,
+          RNDT:saveinvoice.RandomNo,
+          profit: Math.floor(currentdata.Total - currentdata.Cost * quantity),
         }));
         setquantity(null);
         setsearch("");
@@ -245,28 +249,29 @@ const Table = ({
     }
   }, [disc]);
 
-  clearinvoice.current = clearallinvoice;
-  clearcurrent.current = clearcurrentdata;
+  clearinvoice.current = clearallinvoice
+  clearcurrent.current = clearcurrentdata
+ 
   function clearallinvoice() {
-    setinvoice([]);
-    setsaveinvoice([]);
-    setsearch("");
-    setdisc("");
-    setquantity("");
-    setcurrentdata(reset);
-    setTableSelect(null);
-    ipcRenderer.send("invno");
+    setinvoice([])
+    setsaveinvoice([])
+    setsearch("")
+    setdisc("")
+    setquantity("")
+    setcurrentdata(reset)
+    setTableSelect(null)
+    ipcRenderer.send("invno")
   }
   function clearcurrentdata() {
     if (tableSelect != null) {
-      invoice[tableSelect].selected = false;
-      invoice.splice(tableSelect, 1);
-      setTableSelect(null);
-      setsearch("");
-      setdisc("");
-      setquantity("");
-      setcurrentdata(reset);
-      setTableSelect(null);
+      invoice[tableSelect].selected = false
+      invoice.splice(tableSelect, 1)
+      setTableSelect(null)
+      setsearch("")
+      setdisc("")
+      setquantity("")
+      setcurrentdata(reset)
+      setTableSelect(null)
     }
   }
 
@@ -275,51 +280,56 @@ const Table = ({
   const handleKeyDown = (e, index) => {
     if (e.keyCode === 38) {
       if (tableSelect + 1 > 1) {
-        tableSelectToggle(tableSelect - 1);
+        tableSelectToggle(tableSelect - 1)
       }
     } else if (e.keyCode === 40) {
       if (tableSelect + 1 < invoice.length) {
-        tableSelectToggle(tableSelect + 1);
+        tableSelectToggle(tableSelect + 1)
       }
     } else if (e.keyCode === 13) {
-      onDoubleClicktoedit(index);
+      onDoubleClicktoedit(index)
     }
   };
 
   useEffect(() => {
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
-        return item.Code != currentdata.Code;
-      });
-      setinvoice([...filter, currentdata]);
-      let data = saveinvoice.invoiceEdit;
-      let check = data.some((item) => item.Code === currentdata.Code);
+        return item.Code != currentdata.Code
+      })
+      setinvoice([...filter, currentdata])
+      let data = saveinvoice.invoiceEdit
+      let check = data.some((item) => item.Code === currentdata.Code)
       if (check) {
         data = data.filter((item) => {
-          return item.Code != currentdata.Code;
-        });
-        data.push(currentdata);
+          return item.Code != currentdata.Code
+        })
+        data.push(currentdata)
         setsaveinvoice((saveinvoice) => ({
           ...saveinvoice,
           invoiceEdit: data,
-        }));
+        }))
       } else {
-        let data = saveinvoice.newInvoice;
+        let data = saveinvoice.newInvoice
         data = data.filter((item) => {
-          return item.Code != currentdata.Code;
-        });
-        data.push(currentdata);
+          return item.Code != currentdata.Code
+        })
+        data.push(currentdata)
         setsaveinvoice((saveinvoice) => ({
           ...saveinvoice,
           newInvoice: data,
-        }));
+        }))
       }
-
+      if(saveinvoice.newInvoice.length>0 && saveinvoice.invoiceEdit.length>0){
+      setinvoice([])
+      }
       // setsaveinvoice([...filter, currentdata]);
-      setcurrentdata(reset);
+      setcurrentdata(reset)
     }
-    setNetTotal(invoice.reduce((total, item) => total + item.Total, 0));
-  }, [currentdata, invoice, saveinvoice]);
+     if(saveinvoice.newInvoice.length<=0 && saveinvoice.invoiceEdit.length<=0 && invoice.length> 0){
+      setinvoice([])
+      }
+    setNetTotal(invoice.reduce((total, item) => total + item.Total, 0))
+  }, [currentdata, invoice, saveinvoice])
 
   return (
     <div className="input_table">
@@ -354,7 +364,7 @@ const Table = ({
                 ref={refback}
                 value={search === "" ? "" : search}
                 onChange={(e) => {
-                  searchindatabase(e);
+                  searchindatabase(e)
                 }}
                 type="text"
                 name="name"
@@ -428,7 +438,7 @@ const Table = ({
                 min={0}
                 value={quantity == null ? "" : quantity}
                 onChange={(e) => {
-                  addquantity(e);
+                  addquantity(e)
                 }}
                 name="name"
               />
@@ -440,7 +450,7 @@ const Table = ({
                 type="text"
                 ref={focusNextRef}
                 onChange={(e) => {
-                  dischandler(e);
+                  dischandler(e)
                 }}
                 value={disc}
                 name="name"
