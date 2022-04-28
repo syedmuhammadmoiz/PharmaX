@@ -1,6 +1,12 @@
 const path = require("path");
 const url = require("url");
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  ipcRenderer,
+} = require("electron");
 app.isPackaged || require("electron-reloader")(module);
 
 let mainWindow;
@@ -26,7 +32,7 @@ function createMainWindow() {
     icon: `${__dirname}/assets/icon.png`,
     webPreferences: {
       nodeIntegration: true,
-      enableremotemodule: true,
+      enableRemoteModule: true,
       contextIsolation: false,
     },
   });

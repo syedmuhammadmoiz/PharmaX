@@ -28,87 +28,91 @@
   "electronWebpack": {
     "commonSourceDirectory": "common",
     "main": {
-      "sourceDirectory": "main" 
+      "sourceDirectory": "main"
     },
     "renderer": {
-      "sourceDirectory": null 
+      "sourceDirectory": null
     }
   },
   "build": {
     "nodeGypRebuild": false,
-  "buildDependenciesFromSource": false,
-  "directories": {
-    "output": "dist/artifacts/local",
-    "buildResources": "installer/resources"
-  },
-  "files": [
-    "out"
-  ],
-  "extraFiles": [
-    {
-      "from": "build/Release",
-      "to": "nodeAddonDir",
-      "filter": "*.node"
-    }
-  ],
-
-  "win": {
-    "target": "nsis"
-  },
-  "nsis": {
-    "deleteAppDataOnUninstall": true,
-    "include": "installer/win/nsis-installer.nsh"
-  },
-
-  "mac": {
-    "target": "dmg",
-    "hardenedRuntime": true,
-    "gatekeeperAssess": true,
-    "extendInfo": {
-      "NSAppleEventsUsageDescription": "Let me use Apple Events.",
-      "NSCameraUsageDescription": "Let me use the camera.",
-      "NSScreenCaptureDescription": "Let me take screenshots."
-    }
-  },
-  "dmg": {
-    "background": "installer/mac/dmg-background.png",
-    "iconSize": 100,
-    "contents": [
+    "buildDependenciesFromSource": false,
+    "directories": {
+      "output": "dist/artifacts/local",
+      "buildResources": "installer/resources"
+    },
+    "files": [
+      "out"
+    ],
+    "extraFiles": [
       {
-        "x": 255,
-        "y": 85,
-        "type": "file"
-      },
-      {
-        "x": 253,
-        "y": 325,
-        "type": "link",
-        "path": "/Applications"
+        "from": "build/Release",
+        "to": "nodeAddonDir",
+        "filter": "*.node"
       }
     ],
-    "window": {
-      "width": 500,
-      "height": 500
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "deleteAppDataOnUninstall": true,
+      "include": "installer/win/nsis-installer.nsh"
+    },
+    "mac": {
+      "target": "dmg",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": true,
+      "extendInfo": {
+        "NSAppleEventsUsageDescription": "Let me use Apple Events.",
+        "NSCameraUsageDescription": "Let me use the camera.",
+        "NSScreenCaptureDescription": "Let me take screenshots."
+      }
+    },
+    "dmg": {
+      "background": "installer/mac/dmg-background.png",
+      "iconSize": 100,
+      "contents": [
+        {
+          "x": 255,
+          "y": 85,
+          "type": "file"
+        },
+        {
+          "x": 253,
+          "y": 325,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    "linux": {
+      "desktop": {
+        "StartupNotify": "false",
+        "Encoding": "UTF-8",
+        "MimeType": "x-scheme-handler/deeplink"
+      },
+      "target": [
+        "AppImage",
+        "rpm",
+        "deb"
+      ]
+    },
+    "deb": {
+      "priority": "optional",
+      "afterInstall": "installer/linux/after-install.tpl"
+    },
+    "rpm": {
+      "fpm": [
+        "--before-install",
+        "installer/linux/before-install.tpl"
+      ],
+      "afterInstall": "installer/linux/after-install.tpl"
     }
   },
-
-  "linux": {
-    "desktop": {
-      "StartupNotify": "false",
-      "Encoding": "UTF-8",
-      "MimeType": "x-scheme-handler/deeplink"
-    },
-    "target": ["AppImage", "rpm", "deb"]
-  },
-  "deb": {
-    "priority": "optional",
-    "afterInstall":"installer/linux/after-install.tpl"
-  },
-  "rpm": {
-    "fpm": ["--before-install", "installer/linux/before-install.tpl"],
-    "afterInstall":"installer/linux/after-install.tpl"
-  }
-},
   "dependencies": {
     "bootstrap": "^5.1.3",
     "mssql": "^8.0.2",

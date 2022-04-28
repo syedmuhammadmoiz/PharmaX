@@ -1,3 +1,4 @@
+const { dialog } = require("electron");
 const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
@@ -163,38 +164,52 @@ ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
 // Save Medicine into database
 
 global.share.ipcMain.on("saveintodatabase", (event, arg) => {
- console.log(arg)
-//  const inth = parseInt(arg.InvNo);
-  var conn = new sql.ConnectionPool(sqlConfig);
-  conn
-    .connect()
-    .then(function () {
-      var request = new sql.Request(conn);
-      request
-        .query(
-          `
+  dialog
+    .showMessageBox({
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: "Save Invoice",
+      message: "Do you want to save this invoice?",
+    })
+    .then((box) => {
+      if (box.response == 0) {
+        //  const inth = parseInt(arg.InvNo);
+        var conn = new sql.ConnectionPool(sqlConfig);
+        conn
+          .connect()
+          .then(function () {
+            var request = new sql.Request(conn);
+            request
+              .query(
+                `
           DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
           DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
-          EXECUTE Generate_invoice @files=@f, @insert = @i,@total = ${arg.totalMedicine}, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo};
+          EXECUTE Generate_invoice @files=@f, @insert = @i,@total = ${
+            arg.totalMedicine
+          }, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo};
           `
-        )
-        .then(function (recordset) {
-          global.share.mainWindow.webContents.send(
-            "searchinvno",
-            recordset.recordset
-          );
-          conn.close();
-        })
-        .catch(function (err) {
-          console.log(err);
-          conn.close();
-        });
-      console.log("connection is created");
+              )
+              .then(function (recordset) {
+                global.share.mainWindow.webContents.send(
+                  "searchinvno",
+                  recordset.recordset
+                );
+                conn.close();
+              })
+              .catch(function (err) {
+                console.log(err);
+                conn.close();
+              });
+            console.log("connection is created");
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      }else{
+        global.share.mainWindow.webContents.send("setfalse");
+      }
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.log(err);
     });
 });
-
-
-
