@@ -101,12 +101,11 @@ const InvoiceTable = () => {
           saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
       };
       ipcRenderer.send("saveintodatabase", data);
-     
+       setDisables(true)
     }
   };
 
   ipcRenderer.on("setfalse", (event) => {
-    console.log('here')
     setDisables(false)
 
   })
