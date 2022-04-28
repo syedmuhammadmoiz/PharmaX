@@ -1,7 +1,8 @@
+const { dialog } = require("electron");
 const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
-  password: "xerox",
+  password: "1234567890",
   database: "Versale",
   server: "localhost",
   options: {
@@ -123,6 +124,92 @@ global.share.ipcMain.on("customer", (event, arg) => {
       console.log("connection is created");
     })
     .catch(function (err) {
+      console.log(err);
+    });
+});
+
+// Search invoice by invoice no.
+
+global.share.ipcMain.on("searchinvno", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(
+          `SELECT  InvM.RNDT,InvM.InvNo,Invoice.SNO, Invoice.Code, Invoice.Name, Invoice.Batch, Invoice.STP, Invoice.Bon, Invoice.Stax, Invoice.Qty, Invoice.Disc,InvM.InvTime, InvM.Dat 
+from Invoice
+INNER JOIN InvM
+ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
+        )
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "searchinvno",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+// Save Medicine into database
+
+global.share.ipcMain.on("saveintodatabase", (event, arg) => {
+  dialog
+    .showMessageBox({
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: "Save Invoice",
+      message: "Do you want to save this invoice?",
+    })
+    .then((box) => {
+      if (box.response == 0) {
+        //  const inth = parseInt(arg.InvNo);
+        var conn = new sql.ConnectionPool(sqlConfig);
+        conn
+          .connect()
+          .then(function () {
+            var request = new sql.Request(conn);
+            request
+              .query(
+                `
+          DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
+          DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
+          EXECUTE Generate_invoice @files=@f, @insert = @i,@total = ${
+            arg.totalMedicine
+          }, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo};
+          `
+              )
+              .then(function (recordset) {
+                global.share.mainWindow.webContents.send(
+                  "searchinvno",
+                  recordset.recordset
+                );
+                conn.close();
+              })
+              .catch(function (err) {
+                console.log(err);
+                conn.close();
+              });
+            console.log("connection is created");
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      }else{
+        global.share.mainWindow.webContents.send("setfalse");
+      }
+    })
+    .catch((err) => {
       console.log(err);
     });
 });

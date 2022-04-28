@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ipcRenderer } from "electron";
 import "./tableView.css";
 
 const Emptytables = ({ length }) => {
@@ -29,16 +28,9 @@ const TableView = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
+  invoicev,
 }) => {
-  const [show, setShow] = useState(false); //show model
-  const [search, setsearch] = useState(""); //search input
-  var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
-  const [disc, setdisc] = useState(""); //discount
-
-  const [quantity, setquantity] = useState(null); //quantity of medicine
-  const modalToggle = () => setShow(!show);
-  const ref = useRef();
 
   const tableSelectToggle = (index) => {
     setTableSelect(index);
@@ -57,10 +49,13 @@ const TableView = ({
       onDoubleClicktoedit(index);
     }
   };
+  useEffect(() => {
+    invoicev.length > 0 ? setinvoice(invoicev) : setinvoice([]);
+  }, [invoicev]);
 
   return (
     <div className="input_table ">
-      <table className="table_med table_view">
+      <table className="table_med">
         <thead>
           <tr onClick={clickToUnSelectTableRow}>
             <th className="input--1">S.NO</th>
@@ -91,12 +86,12 @@ const TableView = ({
                   <td>{item.Name}</td>
                   <td className="center">{item.Batch}</td>
                   <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
-                  <td className="center">{item.Bonus}</td>
+                  <td className="center">{item.Bon}</td>
                   <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
-                  <td className="center">{item.Quantity}</td>
-                  <td className="center">{item.Disc1}</td>
+                  <td className="center">{item.Qty}</td>
+                  <td className="center">{item.Disc}</td>
                   <td className="center">
-                    {parseFloat(item.Total.toFixed(2))}
+                    {parseFloat(item.STP * item.Qty).toFixed(2)}
                   </td>
                 </tr>
               ))

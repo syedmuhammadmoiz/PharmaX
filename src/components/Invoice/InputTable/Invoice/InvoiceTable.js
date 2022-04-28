@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  useImperativeHandle,
-} from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import Table from "./Table/Table";
 import invoice_png from "../../../../../assets/img/invoice.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
@@ -12,6 +7,7 @@ import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
 import { Link, NavLink } from "react-router-dom";
 import "./InvoiceTable.css";
 import { ipcRenderer } from "electron";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = () => {
   const [customer, setCustomer] = useState("");
@@ -24,8 +20,18 @@ const InvoiceTable = () => {
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [saveinvoice, setsaveinvoice] = useState([]);
+  const [disables, setDisables] = useState(false)
+  const [saveinvoice, setsaveinvoice] = useState({
+    invNo: "",
+    invoiceEdit: [],
+    newInvoice: [],
+    totalMedicine: 0,
+    RandomNo: "",
+  });
 
+  const [notdelete, setnotelete] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
   var currentdate = new Date();
   var datetime =
     currentdate.getDate() +
@@ -51,8 +57,21 @@ const InvoiceTable = () => {
   ipcRenderer.on("salesman", (event, arg) => {
     setSalesman(arg[0].Name);
   });
+  const randomString = () => {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    for (var i = 0; i < 20; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  };
   ipcRenderer.on("invno", (event, arg) => {
     setInvoice(arg[0].InvNo + 1);
+    setsaveinvoice((saveinvoice) => ({
+      ...saveinvoice,
+      invNo: arg[0].InvNo + 1,
+      RandomNo: randomString(),
+    }));
   });
   ipcRenderer.on("customer", (event, arg) => {
     setcustomers(arg);
@@ -60,6 +79,7 @@ const InvoiceTable = () => {
       if (item.Name === customer) setsingleC(item);
     });
   });
+
   const customerdropdown = (e) => {
     setCustomer(e.target.value);
     ipcRenderer.send("customer", e.target.value);
@@ -71,16 +91,41 @@ const InvoiceTable = () => {
       ipcRenderer.send("error", "Please select customer");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
+    } else {
+      let data = {
+        InvNo: saveinvoice.invNo,
+        invoiceEdit: saveinvoice.invoiceEdit,
+        newInvoice: saveinvoice.newInvoice,
+        RandomNo: saveinvoice.RandomNo,
+        totalMedicine:
+          saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
+      };
+      ipcRenderer.send("saveintodatabase", data);
+       setDisables(true)
     }
   };
 
+  ipcRenderer.on("setfalse", (event) => {
+    setDisables(false)
+
+  })
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
     ipcRenderer.send("salesman");
     ipcRenderer.send("customer");
-    ipcRenderer.send("invno");
+    if (id !== undefined && id !== null && id !== "" && id !== "0") {
+      ipcRenderer.send("searchinvno", id);
+      setsaveinvoice((saveinvoice) => ({
+        ...saveinvoice,
+        invNo: id,
+      }));
+      setInvoice(id);
+      setnotelete(true);
+    } else {
+      ipcRenderer.send("invno");
+    }
   }, []);
 
   return (
@@ -206,18 +251,30 @@ const InvoiceTable = () => {
             setNetTotal={setNetTotal}
             clickToUnSelectTableRow={clickToUnSelectTableRow}
             setsaveinvoice={setsaveinvoice}
+            saveinvoice={saveinvoice}
+            Invoice={invoice}
           />
           <div onClick={clickToUnSelectTableRow}>
             <hr className="dotted" />
             <div className="table_buttons">
               <div className="buttons">
                 <button
+                 disabled={disables}
                   className="button_main"
                   onClick={(e) => {
                     savetodatabase(e);
                   }}
                 >
                   Save
+                </button>
+                <button
+                  className="button_main"
+                  onClick={(e) => {
+                    console.log("here");
+                    navigate(0);
+                  }}
+                >
+                  Edit
                 </button>
                 <button
                   className="button_border "
@@ -228,6 +285,7 @@ const InvoiceTable = () => {
                   Clear
                 </button>
                 <button
+                  disabled={notdelete}
                   className="button_border"
                   onClick={(e) => {
                     clearcurrent.current();
@@ -235,6 +293,7 @@ const InvoiceTable = () => {
                 >
                   Delete
                 </button>
+
                 <Link to="/">
                   <button className="button_border">Exit</button>
                 </Link>
