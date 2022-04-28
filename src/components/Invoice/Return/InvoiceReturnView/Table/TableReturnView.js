@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ipcRenderer } from "electron";
-import "./tableView.css";
+import "./tableReturnView.css";
 
 const Emptytables = ({ length }) => {
   let row = [];
@@ -25,7 +25,7 @@ const Emptytables = ({ length }) => {
   return row;
 };
 
-const TableView = ({
+const TableReturnView = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
@@ -57,7 +57,6 @@ const TableView = ({
       onDoubleClicktoedit(index);
     }
   };
-
   return (
     <div className="input_table ">
       <table className="table_med table_view">
@@ -108,4 +107,4 @@ const TableView = ({
   );
 };
 
-export default TableView;
+export default TableReturnView;

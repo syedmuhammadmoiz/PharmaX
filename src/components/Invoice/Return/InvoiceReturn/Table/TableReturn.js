@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-import Modal from "../Modal/Modal";
+import Modal from "../Modal/ModalReturn";
 import { ipcRenderer } from "electron";
-import "./Table.css";
+import "./tableReturn.css";
 
 const Emptytables = ({ length }) => {
   let row = [];
@@ -27,7 +27,7 @@ const Emptytables = ({ length }) => {
   return row;
 };
 
-const Table = ({
+const TableReturn = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
@@ -467,4 +467,4 @@ const Table = ({
   );
 };
 
-export default Table;
+export default TableReturn;

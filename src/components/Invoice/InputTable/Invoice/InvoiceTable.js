@@ -92,7 +92,7 @@ const InvoiceTable = () => {
           <div onClick={clickToUnSelectTableRow}>
             <div className="Invoice">
               <img src={invoice_png} alt="invoice" className="office_img" />
-              <div className="Invoice-heading">Create New Invoice</div>
+              <div className="Invoice-heading">New Invoice</div>
               <div className="buttons_Invoice">
                 <button className="button_border">Print</button>
                 <div className="vertical margin_side"></div>
