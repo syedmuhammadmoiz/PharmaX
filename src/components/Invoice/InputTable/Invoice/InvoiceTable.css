@@ -123,6 +123,11 @@ textarea {
   justify-content: space-between;
   width: 30rem;
 }
+.buttons_view {
+  display: flex;
+  justify-content: space-around;
+  width: 23rem;
+}
 
 .button_border {
   width: 7rem;
