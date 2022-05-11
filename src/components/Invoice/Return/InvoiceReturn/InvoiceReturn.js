@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Table from "./Table/TableReturn.js";
+import Table from "../../../Common/TableEdit/Table";
 import return_png from "../../../../../assets/img/return.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
 import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
+import ModalLoad from "../.././../Common/ModalLoad/ModalReturn";
 import { Link, NavLink } from "react-router-dom";
 import "./invoiceReturn.css";
 import { ipcRenderer } from "electron";
@@ -19,6 +20,9 @@ const InvoiceReturn = () => {
   const [sideBar, setSideBar] = useState(true);
   const [saveinvoice, setsaveinvoice] = useState([]);
 
+  const [show, setShow] = useState(false); //show model
+
+  const modalToggle = () => setShow(!show);
   var currentdate = new Date();
   var datetime =
     currentdate.getDate() +
@@ -79,6 +83,7 @@ const InvoiceReturn = () => {
   return (
     <>
       <TopNavBar />
+      {show ? <ModalLoad modalToggle={modalToggle} setShow={setShow} /> : null}
       <div className="back_cover">
         <SideNavBar sideBar={sideBar} sideBarToggle={sideBarToggle} />
         <div className="cover_margin">
@@ -97,60 +102,75 @@ const InvoiceReturn = () => {
               <div className="flex_basis">
                 <div className="form_col lable_col">
                   <label> Customer: </label>
-                  <label> Disp Name: </label>
-                  <label> Address </label>
-                  <label className="last_lable"> Contact</label>
+                  <label> Address: </label>
+                  <label> Contact: </label>
+                  <label className="last_lable"> Salesman:</label>
                 </div>
                 <div className="form_col">
-                  <input
-                    type="text"
-                    name="name"
-                    onChange={(e) => {
-                      customerdropdown(e);
-                    }}
-                    value={customer}
-                    style={{ textAlign: "center" }}
-                    list="browsers"
-                  />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
-                  <input
-                    type="text"
-                    name="name"
-                    value={customer}
-                    style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
-                  />
-
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="cus-input imp"
+                      type="text"
+                      name="name"
+                      onChange={(e) => {
+                        customerdropdown(e);
+                      }}
+                      value={customer}
+                      style={{ textAlign: "center" }}
+                      list="browsers"
+                    />
+                    <datalist id="browsers">
+                      {customers.map((item, index) => (
+                        <option
+                          onClick={() => {
+                            console.log("here");
+                          }}
+                          value={item.Name}
+                          key={index}
+                        >
+                          {item.Name}
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
                   <input
                     type="text"
                     name="name"
                     value={singleC.Address}
                     style={{ textAlign: "center" }}
                   />
+
                   <input
-                    className="lastinput"
                     type="text"
                     name="name"
                     value={singleC.Contact}
                     style={{ textAlign: "center" }}
                   />
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="lastinput cus-input"
+                      type="text"
+                      name="name"
+                      value={salesman}
+                      style={{ textAlign: "center" }}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex_basis flex_end">
                 <div className="form_col lable_col">
-                  <label>Salesman:</label>
+                  <label>Prev Bal:</label>
                   <label>Date:</label>
                   <label>Time:</label>
                   <label className="last_lable">Invoice number:</label>
@@ -159,9 +179,7 @@ const InvoiceReturn = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setDate(e.target.value)}
                   />
                   <input
                     disabled
@@ -222,9 +240,7 @@ const InvoiceReturn = () => {
                 </button>
                 <button
                   className="button_border"
-                  onClick={(e) => {
-                    clearcurrent.current();
-                  }}
+                  onClick={() => setShow(!show)}
                 >
                   Load Inv.
                 </button>

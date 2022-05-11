@@ -1,25 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./modalReturn.css";
-import Close from "../../../../../../assets/img/close.png";
+import Close from "../../../../assets/img/close.png";
 import { ipcRenderer } from "electron";
-
-// //generate empty Model Table Rows
-// const EmptyModaltables = ({ length }) => {
-//   let row = [];
-//   if (length < 9) {
-//     for (let i = length; i < 9; i++) {
-//       row.push(
-//         <tr key={i}>
-//           <td></td>
-//           <td></td>
-//           <td></td>
-//           <td></td>
-//         </tr>
-//       );
-//     }
-//   }
-//   return row;
-// };
 
 const ModalReturn = ({
   modalToggle,

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Modal.css";
-import Close from "../../../../../../assets/img/close.png";
+import Close from "../../../../assets/img/close.png";
 import { ipcRenderer } from "electron";
 
 //generate empty Model Table Rows

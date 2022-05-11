@@ -2,7 +2,7 @@ const { dialog } = require("electron");
 const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
-  password: "1234567890",
+  password: "xerox",
   database: "Versale",
   server: "localhost",
   options: {
@@ -205,7 +205,7 @@ global.share.ipcMain.on("saveintodatabase", (event, arg) => {
           .catch(function (err) {
             console.log(err);
           });
-      }else{
+      } else {
         global.share.mainWindow.webContents.send("setfalse");
       }
     })

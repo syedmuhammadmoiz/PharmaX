@@ -121,7 +121,7 @@ textarea {
 .buttons {
   display: flex;
   justify-content: space-between;
-  width: 30rem;
+  width: 40rem;
 }
 .buttons_view {
   display: flex;
@@ -248,4 +248,25 @@ input:focus {
   width: 2rem;
   margin: 0 1rem 0 0;
   filter: opacity(0.5);
+}
+
+.input-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Id-input {
+  max-width: 2.75rem;
+}
+
+.cus-input {
+  max-width: 7.5rem;
+}
+
+.input-total {
+  max-width: 5.15rem;
+}
+
+.imp::-webkit-calendar-picker-indicator {
+  display: none !important;
 }

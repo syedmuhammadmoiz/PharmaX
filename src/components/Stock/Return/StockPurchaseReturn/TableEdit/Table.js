@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-
-import Modal from "../Modal/ModalReturn";
+import Modal from "../../../../Common/Modal/Modal";
 import { ipcRenderer } from "electron";
-import "./tableReturn.css";
+import "./Table.css";
 
 const Emptytables = ({ length }) => {
   let row = [];
@@ -20,6 +19,7 @@ const Emptytables = ({ length }) => {
           <td></td>
           <td></td>
           <td></td>
+          <td></td>
         </tr>
       );
     }
@@ -27,7 +27,7 @@ const Emptytables = ({ length }) => {
   return row;
 };
 
-const TableReturn = ({
+const Table = ({
   tableSelect,
   setTableSelect,
   clickToUnSelectTableRow,
@@ -35,6 +35,8 @@ const TableReturn = ({
   clearinvoice,
   clearcurrent,
   setsaveinvoice,
+  Invoice,
+  saveinvoice,
 }) => {
   const [show, setShow] = useState(false); //show model
   const [search, setsearch] = useState(""); //search input
@@ -89,7 +91,6 @@ const TableReturn = ({
     setquantity(invoice[index].Quantity);
     setdisc(invoice[index].Disc1);
     setinvoice(invoice);
-    console.log(currentdata);
   };
 
   //handle the next input move if input is empty it can't move
@@ -108,7 +109,6 @@ const TableReturn = ({
 
   function useFocusNext() {
     const controls = useRef([]);
-
     const handler = (event) => {
       if (event.keyCode === 13) {
         // Required if the controls can be reordered
@@ -144,6 +144,33 @@ const TableReturn = ({
     setdata(arg);
   });
 
+  ipcRenderer.on("searchinvno", (event, arg) => {
+    if (arg.length > 0) {
+      const data = arg.map((element) => ({
+        Batch: element.Batch,
+        Bonus: -1,
+        Code: element.Code,
+        Cost: 0,
+        Disc1: 0,
+        Name: element.Name,
+        Price: element.STP,
+        Quantity: element.Qty,
+        STP: element.STP,
+        Total: element.STP * element.Qty,
+        TP: element.STP,
+        selected: false,
+        SNO: element.SNO,
+        RNDT: element.RNDT,
+        Stax: 0.0,
+      }));
+      setinvoice(data);
+      setsaveinvoice((saveinvoice) => ({
+        ...saveinvoice,
+        invoiceEdit: data,
+        RandomNo: data[0].RNDT,
+      }));
+    }
+  });
   //generating the invoice
   const senddatatoinvoice = (item) => {
     setShow(!show);
@@ -152,11 +179,11 @@ const TableReturn = ({
       SNO: item.SNO,
       Bonus: item.Bonus,
       Code: item.Code,
-      STP: item.STP,
-      Cost: item.Cost,
-      TP: item.TP,
-      Price: item.Price,
+      STP: Math.floor(item.STP),
+      Cost: Math.floor(item.Cost),
+      TP: Math.floor(item.TP),
       Name: item.Name,
+      Price: Math.floor(item.Price),
       Disc1: item.Disc1,
       Stax: item.Stax,
       Batch: item.Batch,
@@ -165,6 +192,7 @@ const TableReturn = ({
     setdisc(0);
     ref.current?.focus();
   };
+
   //generating invoice
   const putdataintoinvoice = (e) => {
     if (e.key.toLowerCase() === "enter") {
@@ -172,10 +200,13 @@ const TableReturn = ({
         billcalculation();
         setcurrentdata((currentdata) => ({
           ...currentdata,
-          Total: quantity * currentdata.Total,
+          Total: Math.floor(quantity * currentdata.STP),
           Quantity: quantity,
           Disc1: disc,
           selected: false,
+          invoiceno: Invoice,
+          RNDT: saveinvoice.RandomNo,
+          profit: Math.floor(currentdata.Total - currentdata.Cost * quantity),
         }));
         setquantity(null);
         setsearch("");
@@ -229,6 +260,7 @@ const TableReturn = ({
 
   clearinvoice.current = clearallinvoice;
   clearcurrent.current = clearcurrentdata;
+
   function clearallinvoice() {
     setinvoice([]);
     setsaveinvoice([]);
@@ -237,6 +269,7 @@ const TableReturn = ({
     setquantity("");
     setcurrentdata(reset);
     setTableSelect(null);
+    ipcRenderer.send("invno");
   }
   function clearcurrentdata() {
     if (tableSelect != null) {
@@ -267,20 +300,45 @@ const TableReturn = ({
     }
   };
 
-  // save invoice to database
-  const runqurey = () => {};
-
   useEffect(() => {
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
         return item.Code != currentdata.Code;
       });
       setinvoice([...filter, currentdata]);
-      setsaveinvoice([...filter, currentdata]);
+      let data = saveinvoice.invoiceEdit;
+      let check = data.some((item) => item.Code === currentdata.Code);
+      if (check) {
+        data = data.filter((item) => {
+          return item.Code != currentdata.Code;
+        });
+        data.push(currentdata);
+        setsaveinvoice((saveinvoice) => ({
+          ...saveinvoice,
+          invoiceEdit: data,
+        }));
+      } else {
+        let data = saveinvoice.newInvoice;
+        data = data.filter((item) => {
+          return item.Code != currentdata.Code;
+        });
+        data.push(currentdata);
+        setsaveinvoice((saveinvoice) => ({
+          ...saveinvoice,
+          newInvoice: data,
+        }));
+      }
+      if (
+        saveinvoice.newInvoice.length > 0 &&
+        saveinvoice.invoiceEdit.length > 0
+      ) {
+        setinvoice([]);
+      }
+      // setsaveinvoice([...filter, currentdata]);
       setcurrentdata(reset);
     }
     setNetTotal(invoice.reduce((total, item) => total + item.Total, 0));
-  }, [currentdata, invoice]);
+  }, [currentdata, invoice, saveinvoice]);
 
   return (
     <div className="input_table">
@@ -309,7 +367,7 @@ const TableReturn = ({
             </th>
             <th>
               <input
-                className="input-same-2"
+                className="input-same-1"
                 id="Code"
                 onKeyDown={handleEnter1}
                 ref={refback}
@@ -335,7 +393,7 @@ const TableReturn = ({
             <th>
               <input
                 disabled
-                className="input-same-2 center"
+                className="input-same-1 center"
                 id="Batch"
                 value={currentdata.Batch == "" ? "" : currentdata.Batch}
                 ref={focusNextRef}
@@ -345,17 +403,16 @@ const TableReturn = ({
             </th>
             <th>
               <input
-                disabled
                 className="input-same-1 center"
-                id="SPrice"
+                id="Expdate"
                 value={
                   currentdata.Price == ""
                     ? ""
                     : parseFloat(currentdata.STP.toFixed(2))
                 }
                 type="text"
+                name="trip-start"
                 ref={focusNextRef}
-                name="name"
               />
             </th>
             <th>
@@ -409,6 +466,19 @@ const TableReturn = ({
             </th>
             <th>
               <input
+                className="input-same-1 center"
+                id="Bonous"
+                type="text"
+                ref={focusNextRef}
+                onChange={(e) => {
+                  dischandler(e);
+                }}
+                value={disc}
+                name="name"
+              />
+            </th>
+            <th>
+              <input
                 className="input-same-2 last_input center"
                 type="text"
                 name="name"
@@ -425,11 +495,12 @@ const TableReturn = ({
             <th className="input--1 ">S.NO</th>
             <th className="input-same-1">Code</th>
             <th className="input-same-3">Item Name</th>
-            <th className="input-same-2">Batch</th>
-            <th className="input-same-1">S.Price</th>
-            <th className="input-same-1">Bouns</th>
-            <th className="input-same-1">S.Tax</th>
+            <th className="input-same-1">Retail</th>
+            <th className="input-same-1">CDisc</th>
+            <th className="input-same-1">TP</th>
             <th className="input-same-1">Qunatity</th>
+            <th className="input-same-1">Bon</th>
+            <th className="input-same-1">STP</th>
             <th className="input-same-1">Disc</th>
             <th className="input-same-2">Net Amount</th>
           </tr>
@@ -454,6 +525,7 @@ const TableReturn = ({
                   <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
                   <td className="center">{item.Quantity}</td>
                   <td className="center">{item.Disc1}</td>
+                  <td className="center">{item.Disc1}</td>
                   <td className="center">
                     {parseFloat(item.Total.toFixed(2))}
                   </td>
@@ -467,4 +539,4 @@ const TableReturn = ({
   );
 };
 
-export default TableReturn;
+export default Table;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import Table from "./Table/Table";
+import Table from "../../../Common/TableEdit/Table";
 import invoice_png from "../../../../../assets/img/invoice.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
 import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
@@ -20,7 +20,7 @@ const InvoiceTable = () => {
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [disables, setDisables] = useState(false)
+  const [disables, setDisables] = useState(false);
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -101,14 +101,13 @@ const InvoiceTable = () => {
           saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
       };
       ipcRenderer.send("saveintodatabase", data);
-       setDisables(true)
+      setDisables(true);
     }
   };
 
   ipcRenderer.on("setfalse", (event) => {
-    setDisables(false)
-
-  })
+    setDisables(false);
+  });
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
@@ -149,72 +148,94 @@ const InvoiceTable = () => {
               <div className="flex_basis">
                 <div className="form_col lable_col">
                   <label> Customer: </label>
-                  <label> Disp Name: </label>
-                  <label> Address </label>
-                  <label className="last_lable"> Contact</label>
+                  <label> Address: </label>
+                  <label> Contact: </label>
+                  <label className="last_lable"> Salesman:</label>
                 </div>
                 <div className="form_col">
-                  <input
-                    type="text"
-                    name="name"
-                    onChange={(e) => {
-                      customerdropdown(e);
-                    }}
-                    value={customer}
-                    style={{ textAlign: "center" }}
-                    list="browsers"
-                  />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
-                  <input
-                    type="text"
-                    name="name"
-                    value={customer}
-                    style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
-                  />
-
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="cus-input imp"
+                      type="text"
+                      name="name"
+                      onChange={(e) => {
+                        customerdropdown(e);
+                      }}
+                      value={customer}
+                      style={{ textAlign: "center" }}
+                      list="browsers"
+                    />
+                    <datalist id="browsers">
+                      {customers.map((item, index) => (
+                        <option
+                          onClick={() => {
+                            console.log("here");
+                          }}
+                          value={item.Name}
+                          key={index}
+                        >
+                          {item.Name}
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
                   <input
                     type="text"
                     name="name"
                     value={singleC.Address}
                     style={{ textAlign: "center" }}
+                    onChange={(e) => setCustomer(e.target.value)}
                   />
                   <input
-                    className="lastinput"
                     type="text"
                     name="name"
                     value={singleC.Contact}
                     style={{ textAlign: "center" }}
                   />
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="lastinput cus-input"
+                      type="text"
+                      name="name"
+                      value={salesman}
+                      style={{ textAlign: "center" }}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex_basis flex_end">
                 <div className="form_col lable_col">
-                  <label>Salesman:</label>
+                  <label>Prev Bal: / Total:</label>
                   <label>Date:</label>
                   <label>Time:</label>
                   <label className="last_lable">Invoice number:</label>
                 </div>
                 <div className="form_col">
-                  <input
-                    type="text"
-                    name="name"
-                    value={salesman}
-                    style={{ textAlign: "center" }}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="input-total"
+                      name="name"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      type="text"
+                      className="input-total"
+                      name="name"
+                      style={{ textAlign: "center" }}
+                    />
+                  </div>
                   <input
                     disabled
                     type="text"
@@ -259,7 +280,7 @@ const InvoiceTable = () => {
             <div className="table_buttons">
               <div className="buttons">
                 <button
-                 disabled={disables}
+                  disabled={disables}
                   className="button_main"
                   onClick={(e) => {
                     savetodatabase(e);
@@ -268,7 +289,7 @@ const InvoiceTable = () => {
                   Save
                 </button>
                 <button
-                  className="button_main"
+                  className="button_border"
                   onClick={(e) => {
                     console.log("here");
                     navigate(0);
@@ -277,7 +298,7 @@ const InvoiceTable = () => {
                   Edit
                 </button>
                 <button
-                  className="button_border "
+                  className="button_border"
                   onClick={(e) => {
                     clearinvoice.current();
                   }}
