@@ -2,7 +2,7 @@ const { dialog } = require("electron");
 const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
-  password: "xerox",
+  password: "1234567890",
   database: "Versale",
   server: "localhost",
   options: {
@@ -210,6 +210,122 @@ global.share.ipcMain.on("saveintodatabase", (event, arg) => {
       }
     })
     .catch((err) => {
+      console.log(err);
+    });
+});
+
+
+
+//Get salesman info
+
+global.share.ipcMain.on("selectsupplier", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`select * from Supplier where SID = ${arg}`)
+        .then(function (recordset) {
+          console.log(recordset)
+          global.share.mainWindow.webContents.send(
+            "getsupplier",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+// Save Stock into database
+
+global.share.ipcMain.on("stockintodatabase", (event, arg) => {
+  dialog
+    .showMessageBox({
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: "Save Invoice",
+      message: "Do you want to save this Stock?",
+    })
+    .then((box) => {
+      if (box.response == 0) {
+        console.log(arg)
+        var conn = new sql.ConnectionPool(sqlConfig);
+        conn
+          .connect()
+          .then(function () {
+            console.log(arg)
+            console.log('yes try to save into databse')
+            var request = new sql.Request(conn);
+            request
+              .query(
+                `
+          DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
+          DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
+          EXECUTE Generate_Purchase_invoice @files=@f, @insert = @i,@Builty = ${
+            arg.builtyno 
+          }, @RNDT = '${arg.RandomNo}', @card = ${arg.CRD} , @SID = ${arg.customer.SID},@Transport = ${arg.transport};
+          `
+              )
+              .then(function (recordset) {
+                console.log(recordset.recordset)
+                // global.share.mainWindow.webContents.send(
+                //   "searchinvno",
+                //   recordset.recordset
+                // );
+                conn.close();
+              })
+              .catch(function (err) {
+                console.log(err);
+                conn.close();
+              });
+            console.log("connection is created");
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      } else {
+        global.share.mainWindow.webContents.send("setfalse");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+
+//Get Card Number
+
+global.share.ipcMain.on("cardno", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`select max(CRD) as CRD from PurchM`)
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "cardno",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
       console.log(err);
     });
 });

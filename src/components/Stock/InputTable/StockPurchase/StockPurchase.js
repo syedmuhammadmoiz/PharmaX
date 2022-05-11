@@ -21,6 +21,8 @@ const StockPurchase = () => {
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
+  const [builtyno,setbuiltyno] = useState(0);
+  const [transport,settransport] = useState("")
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -65,43 +67,52 @@ const StockPurchase = () => {
     }
     return text;
   };
-  ipcRenderer.on("invno", (event, arg) => {
-    setInvoice(arg[0].InvNo + 1);
+  ipcRenderer.on("cardno", (event, arg) => {
+    setInvoice(arg[0].CRD + 1);
     setsaveinvoice((saveinvoice) => ({
       ...saveinvoice,
-      invNo: arg[0].InvNo + 1,
+      invNo: arg[0].CRD + 1,
       RandomNo: randomString(),
     }));
   });
-  ipcRenderer.on("customer", (event, arg) => {
-    setcustomers(arg);
-    arg.map((item) => {
-      if (item.Name === customer) setsingleC(item);
-    });
+  ipcRenderer.on("getsupplier", (event, arg) => {
+    if(arg.length > 0){
+     setCustomer(arg[0])
+    }
   });
 
   const customerdropdown = (e) => {
-    setCustomer(e.target.value);
-    ipcRenderer.send("customer", e.target.value);
+    setCustomer(e.target.value)
+    ipcRenderer.send("selectsupplier", e.target.value)
   };
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
-    if (customer.length === 0) {
-      ipcRenderer.send("error", "Please select customer");
+    if(saveinvoice.invoiceEdit.length > 0 || saveinvoice.newInvoice.length > 0){
+    if (customer.length === 0 ) {
+      ipcRenderer.send("error", "Please select Supplier");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
-    } else {
-      let data = {
-        InvNo: saveinvoice.invNo,
+    }else if(builtyno == 0){
+      ipcRenderer.send("error", "Please Enter the Builty No");
+    }
+    else if(transport.length <= 0){
+      ipcRenderer.send("error", "Please Enter the Transport");
+    }
+    else {
+      let data  = {
+        builtyno,
+        customer,
+        transport,
+        CRD: saveinvoice.invNo,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
         RandomNo: saveinvoice.RandomNo,
-        totalMedicine:
-          saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
-      };
-      ipcRenderer.send("saveintodatabase", data);
+      }
+      ipcRenderer.send("stockintodatabase", data);
       setDisables(true);
+    }}else{
+      ipcRenderer.send("error", "Please Enter the Medicine into the Table");
     }
   };
 
@@ -112,8 +123,6 @@ const StockPurchase = () => {
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer");
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchinvno", id);
       setsaveinvoice((saveinvoice) => ({
@@ -123,7 +132,7 @@ const StockPurchase = () => {
       setInvoice(id);
       setnotelete(true);
     } else {
-      ipcRenderer.send("invno");
+      ipcRenderer.send("cardno");
     }
   }, []);
 
@@ -156,38 +165,24 @@ const StockPurchase = () => {
                     type="text"
                     name="name"
                     onChange={(e) => {
-                      customerdropdown(e);
+                      customerdropdown(e)
                     }}
-                    value={customer}
+                    value={customer.Name}
                     style={{ textAlign: "center" }}
-                    list="browsers"
                   />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
                   <input
                     type="text"
                     name="name"
-                    value={customer}
+                    value={customer.Address}
                     style={{ textAlign: "center" }}
                     onChange={(e) => setCustomer(e.target.value)}
                   />
-
                   <input
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={singleC.Address}
+                    value={transport}
+                    onChange={(e) => {settransport(e.target.value)}}
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -202,9 +197,9 @@ const StockPurchase = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
+                    value={builtyno}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e) => setbuiltyno(e.target.value)}
                   />
                   <input
                     disabled
