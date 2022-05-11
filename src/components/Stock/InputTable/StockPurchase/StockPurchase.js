@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Table from "./TableEdit/Table";
 import purchase_png from "../../../../../assets/img/purchase.png";
@@ -11,18 +11,13 @@ import { useNavigate } from "react-router-dom";
 
 const StockPurchase = () => {
   const [customer, setCustomer] = useState("");
-  const [singleC, setsingleC] = useState({});
-  const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
-  const [date, setDate] = useState("");
   const [invoice, setInvoice] = useState("");
-  const [time, setTime] = useState("");
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
-  const [builtyno,setbuiltyno] = useState(0);
-  const [transport,settransport] = useState("")
+  const [builtyno, setbuiltyno] = useState(0);
+  const [transport, settransport] = useState("");
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -42,11 +37,7 @@ const StockPurchase = () => {
     "/" +
     currentdate.getFullYear();
 
-  useMemo(() => {
-    setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-  }, []);
+
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
@@ -56,9 +47,19 @@ const StockPurchase = () => {
   const clearinvoice = useRef();
   const clearcurrent = useRef();
 
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
-  });
+  ipcRenderer.on( "searchstockno", (event, arg) => {
+  
+    setCustomer({
+      Name:arg[0].Supplier_Name,
+      Address:arg[0].Address,
+      SID:arg[0].SID,
+    })
+    setbuiltyno(arg[0].Builty)
+    settransport(arg[0].Transport)
+
+     
+  })
+
   const randomString = () => {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -76,42 +77,45 @@ const StockPurchase = () => {
     }));
   });
   ipcRenderer.on("getsupplier", (event, arg) => {
-    if(arg.length > 0){
-     setCustomer(arg[0])
+    if (arg.length > 0) {
+      setCustomer(arg[0]);
     }
   });
 
   const customerdropdown = (e) => {
-    setCustomer(e.target.value)
-    ipcRenderer.send("selectsupplier", e.target.value)
+    setCustomer(e.target.value);
+    ipcRenderer.send("selectsupplier", e.target.value);
   };
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
-    if(saveinvoice.invoiceEdit.length > 0 || saveinvoice.newInvoice.length > 0){
-    if (customer.length === 0 ) {
-      ipcRenderer.send("error", "Please select Supplier");
-    } else if (saveinvoice.length === 0) {
-      ipcRenderer.send("error", "Please select the Medicine");
-    }else if(builtyno == 0){
-      ipcRenderer.send("error", "Please Enter the Builty No");
-    }
-    else if(transport.length <= 0){
-      ipcRenderer.send("error", "Please Enter the Transport");
-    }
-    else {
-      let data  = {
-        builtyno,
-        customer,
-        transport,
-        CRD: saveinvoice.invNo,
-        invoiceEdit: saveinvoice.invoiceEdit,
-        newInvoice: saveinvoice.newInvoice,
-        RandomNo: saveinvoice.RandomNo,
+    if (
+      saveinvoice.invoiceEdit.length > 0 ||
+      saveinvoice.newInvoice.length > 0
+    ) {
+      if (customer.length === 0) {
+        ipcRenderer.send("error", "Please select Supplier");
+      } else if (saveinvoice.length === 0) {
+        ipcRenderer.send("error", "Please select the Medicine");
+      } else if (builtyno == 0) {
+        ipcRenderer.send("error", "Please Enter the Builty No");
+      } else if (transport.length <= 0) {
+        ipcRenderer.send("error", "Please Enter the Transport");
+      } else {
+        const builtyn = builtyno.toString()
+        let data = {
+          builtyno:builtyn,
+          customer,
+          transport,
+          CRD: parseInt(saveinvoice.invNo),
+          invoiceEdit: saveinvoice.invoiceEdit,
+          newInvoice: saveinvoice.newInvoice,
+          RandomNo: saveinvoice.RandomNo,
+        };
+        ipcRenderer.send("stockintodatabase", data);
+        setDisables(true);
       }
-      ipcRenderer.send("stockintodatabase", data);
-      setDisables(true);
-    }}else{
+    } else {
       ipcRenderer.send("error", "Please Enter the Medicine into the Table");
     }
   };
@@ -124,7 +128,7 @@ const StockPurchase = () => {
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
-      ipcRenderer.send("searchinvno", id);
+      ipcRenderer.send("searchstockno", id);
       setsaveinvoice((saveinvoice) => ({
         ...saveinvoice,
         invNo: id,
@@ -165,7 +169,7 @@ const StockPurchase = () => {
                     type="text"
                     name="name"
                     onChange={(e) => {
-                      customerdropdown(e)
+                      customerdropdown(e);
                     }}
                     value={customer.Name}
                     style={{ textAlign: "center" }}
@@ -182,7 +186,9 @@ const StockPurchase = () => {
                     type="text"
                     name="name"
                     value={transport}
-                    onChange={(e) => {settransport(e.target.value)}}
+                    onChange={(e) => {
+                      settransport(e.target.value);
+                    }}
                     style={{ textAlign: "center" }}
                   />
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import TableView from "../../../Common/PurchaseTableView/TableView";
 import commission_png from "../../../../../assets/img/commission.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
@@ -9,15 +9,14 @@ import { ipcRenderer } from "electron";
 import { useNavigate } from "react-router-dom";
 
 const StockPurchaseView = () => {
-  const [customer, setCustomer] = useState("General");
-  const [singleC, setsingleC] = useState({});
-  const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
+  const [supID, setsupID] = useState("");
+  const [supName, setsupName] = useState("");
+  const [Builty, setBuilty] = useState("");
+  const [transport, settransport] = useState("");
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [invoiceno, setinvoiceno] = useState("");
+  const [cardno, setcardno] = useState("");
   const [invoicev, setinvoicev] = useState([]);
   const [total, settotal] = useState(0.0);
 
@@ -28,36 +27,33 @@ const StockPurchaseView = () => {
     }
   };
 
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
-  });
-  ipcRenderer.on("searchinvno", (event, arg) => {
+  ipcRenderer.on("searchstockno", (event, arg) => {
+    console.log(arg)
     if (arg.length > 0) {
       setinvoicev(arg);
       let InvDate = new Date(arg[0].Dat);
       setDate(InvDate.toLocaleDateString());
-      setTime(arg[0].InvTime);
+      setBuilty(arg[0].Builty);
+      setsupID(arg[0].SID);
+      settransport(arg[0].Transport);
+      setsupName(arg[0].Supplier_Name);
       settotal(arg.reduce((total, item) => total + item.STP * item.Qty, 0));
     } else {
     }
   });
-  ipcRenderer.on("customer", (event, arg) => {
-    setsingleC(arg[0]);
-  });
-
   const invoicekeydown = (e) => {
     if (e.key === "Enter") {
-      if (invoiceno.length === 0) {
+      if (cardno.length === 0) {
         ipcRenderer.send("error", "Please Enter the Invoice No");
       } else {
-        ipcRenderer.send("searchinvno", invoiceno);
+        ipcRenderer.send("searchstockno", cardno);
       }
     }
   };
   //clear current data from table
   const cleardata = () => {
     setinvoicev([]);
-    setinvoiceno("");
+    setcardno("");
     setDate("");
     setTime("");
   };
@@ -68,16 +64,11 @@ const StockPurchaseView = () => {
       console.log("here");
       ipcRenderer.send("error", "Please select the Invoice to Edit");
     } else {
-      nevigate(`/invoice/${invoiceno}`);
+      nevigate(`/StockPurchase/${cardno}`);
     }
   };
   function callfunction() {}
   const sideBarToggle = () => setSideBar(!sideBar);
-
-  useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer", customer);
-  }, []);
 
   return (
     <>
@@ -110,35 +101,20 @@ const StockPurchaseView = () => {
                     onChange={(e) => {
                       customerdropdown(e);
                     }}
-                    value={customer}
+                    value={supID}
                     style={{ textAlign: "center" }}
-                    list="browsers"
                   />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
                   <input
                     type="text"
                     name="name"
-                    value={customer}
+                    value={supName}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
                   />
                   <input
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={singleC.Contact}
+                    value={Builty}
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -153,7 +129,7 @@ const StockPurchaseView = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
+                    value={transport}
                     style={{ textAlign: "center" }}
                   />
                   <input
@@ -169,8 +145,8 @@ const StockPurchaseView = () => {
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={invoiceno}
-                    onChange={(e) => setinvoiceno(e.target.value)}
+                    value={cardno}
+                    onChange={(e) => setcardno(e.target.value)}
                     onKeyDown={(e) => {
                       invoicekeydown(e);
                     }}

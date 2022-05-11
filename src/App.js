@@ -18,7 +18,7 @@ const App = () => {
         <Route path="/" element={<Mainpage />}></Route>
         <Route path="/Invoice/:id" element={<InvoiceTable />}></Route>
         <Route path="/InvoiceView" element={<InvoiceView />}></Route>
-        <Route path="/StockPurchase" element={<StockPurchase />}></Route>
+        <Route path="/StockPurchase/:id" element={<StockPurchase />}></Route>
         <Route
           path="/StockPurchaseView"
           element={<StockPurchaseView />}

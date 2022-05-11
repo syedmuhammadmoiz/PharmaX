@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import "./sideNavBar.css";
 const SideNavBar = ({ sideBar, sideBarToggle }) => {
   return (
@@ -21,7 +21,7 @@ const SideNavBar = ({ sideBar, sideBarToggle }) => {
             Invoice View
           </Link>
 
-          <Link className="links" to="/StockPurchase">
+          <Link className="links" to="/StockPurchase/0">
             Stock Purchase
           </Link>
 

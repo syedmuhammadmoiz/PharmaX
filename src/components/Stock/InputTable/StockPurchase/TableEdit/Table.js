@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Modal from "../../../../Common/Modal/Modal";
 import { ipcRenderer } from "electron";
+import moment from "moment";
 import "./Table.css";
 
 const Emptytables = ({ length }) => {
@@ -43,7 +44,7 @@ const Table = ({
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
-  const [Expiry,setExpiry] = useState("")
+  const [Expiry, setExpiry] = useState("");
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -87,6 +88,7 @@ const Table = ({
   //on Double click to select table row for edit
   const onDoubleClicktoedit = (index) => {
     invoice[index].selected = true;
+    setExpiry(invoice[index].Expiry);
     setcurrentdata(invoice[index]);
     setsearch(invoice[index].Code);
     setquantity(invoice[index].Quantity);
@@ -145,8 +147,10 @@ const Table = ({
     setdata(arg);
   });
 
-  ipcRenderer.on("searchinvno", (event, arg) => {
+  ipcRenderer.on("searchstockno", (event, arg) => {
+
     if (arg.length > 0) {
+      console.log(arg)
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -155,7 +159,8 @@ const Table = ({
         Disc1: 0,
         Name: element.Name,
         Price: element.STP,
-        Quantity: element.Qty,
+        Quantity: parseInt(element.Qty),
+        Expiry: moment(element.Dat).format("YYYY-MM-DD"),
         STP: element.STP,
         Total: element.STP * element.Qty,
         TP: element.STP,
@@ -197,30 +202,30 @@ const Table = ({
   //generating invoice
   const putdataintoinvoice = (e) => {
     if (e.key.toLowerCase() === "enter") {
-      if (quantity != null && quantity != 0 && Expiry != '') {
+      if (quantity != null && quantity != 0 && Expiry != "") {
         billcalculation();
         setcurrentdata((currentdata) => ({
           ...currentdata,
           Total: Math.floor(quantity * currentdata.STP),
-          Quantity: quantity,
+          Quantity: parseInt(quantity),
           Disc1: disc,
           selected: false,
-          Crd: Invoice,
-          Expiry:Expiry,
+          Crd: parseInt(Invoice),
+          Expiry: Expiry,
           RNDT: saveinvoice.RandomNo,
           profit: Math.floor(currentdata.Total - currentdata.Cost * quantity),
         }));
         setquantity(null);
         setsearch("");
         setdisc("");
-        setExpiry("")
+        setExpiry("");
         setTableSelect(null);
         refback.current?.focus();
       } else if (currentdata.Code == "") {
         ipcRenderer.send("error", "Please Select the Medicine");
-      } else if(Expiry == ""){
-        ipcRenderer.send("error","please Enter the Expiry")
-      }else{
+      } else if (Expiry == "") {
+        ipcRenderer.send("error", "please Enter the Expiry");
+      } else {
         ipcRenderer.send("error", "Please Enter the Quantity");
       }
     }
@@ -273,7 +278,7 @@ const Table = ({
     setdisc("");
     setquantity("");
     setcurrentdata(reset);
-    setExpiry("")
+    setExpiry("");
     setTableSelect(null);
     ipcRenderer.send("invno");
   }
@@ -286,7 +291,7 @@ const Table = ({
       setdisc("");
       setquantity("");
       setcurrentdata(reset);
-      setExpiry("")
+      setExpiry("");
       setTableSelect(null);
     }
   }
@@ -416,7 +421,7 @@ const Table = ({
                 name="trip-start"
                 value={Expiry}
                 onChange={(e) => {
-                  setExpiry(e.target.value)
+                  setExpiry(e.target.value);
                 }}
                 ref={focusNextRef}
               />

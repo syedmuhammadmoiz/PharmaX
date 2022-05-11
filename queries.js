@@ -214,8 +214,6 @@ global.share.ipcMain.on("saveintodatabase", (event, arg) => {
     });
 });
 
-
-
 //Get salesman info
 
 global.share.ipcMain.on("selectsupplier", (event, arg) => {
@@ -227,7 +225,7 @@ global.share.ipcMain.on("selectsupplier", (event, arg) => {
       request
         .query(`select * from Supplier where SID = ${arg}`)
         .then(function (recordset) {
-          console.log(recordset)
+          console.log(recordset);
           global.share.mainWindow.webContents.send(
             "getsupplier",
             recordset.recordset
@@ -257,13 +255,13 @@ global.share.ipcMain.on("stockintodatabase", (event, arg) => {
     })
     .then((box) => {
       if (box.response == 0) {
-        console.log(arg)
         var conn = new sql.ConnectionPool(sqlConfig);
         conn
           .connect()
           .then(function () {
-            console.log(arg)
-            console.log('yes try to save into databse')
+            console.log('here')
+            console.log(arg);
+            console.log("yes try to save into databse");
             var request = new sql.Request(conn);
             request
               .query(
@@ -271,12 +269,14 @@ global.share.ipcMain.on("stockintodatabase", (event, arg) => {
           DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
           DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
           EXECUTE Generate_Purchase_invoice @files=@f, @insert = @i,@Builty = ${
-            arg.builtyno 
-          }, @RNDT = '${arg.RandomNo}', @card = ${arg.CRD} , @SID = ${arg.customer.SID},@Transport = ${arg.transport};
+            arg.builtyno
+          }, @RNDT = '${arg.RandomNo}', @card = ${arg.CRD} , @SID = ${
+                  arg.customer.SID
+                },@Transport = ${arg.transport};
           `
               )
               .then(function (recordset) {
-                console.log(recordset.recordset)
+                console.log(recordset.recordset);
                 // global.share.mainWindow.webContents.send(
                 //   "searchinvno",
                 //   recordset.recordset
@@ -301,7 +301,6 @@ global.share.ipcMain.on("stockintodatabase", (event, arg) => {
     });
 });
 
-
 //Get Card Number
 
 global.share.ipcMain.on("cardno", (event, arg) => {
@@ -315,6 +314,41 @@ global.share.ipcMain.on("cardno", (event, arg) => {
         .then(function (recordset) {
           global.share.mainWindow.webContents.send(
             "cardno",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+// Search invoice by invoice no.
+
+global.share.ipcMain.on("searchstockno", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`SELECT  PurchM.RNDT,PurchM.CRD, PurchM.Builty, Stock.Batch, Supplier.Name as Supplier_Name, Supplier.Address,  PurchM.SID, PurchM.Transport,Purchase.SNO, Purchase.Code, Purchase.Name,  Purchase.Retail, Purchase.CDisc, Purchase.TP, Purchase.Qty, Purchase.Bon, Purchase.Stax,  Purchase.STP, Purchase.Disc,PurchM.Dat 
+from Purchase
+INNER JOIN PurchM
+ON PurchM.CRD =  ${arg} and Purchase.Crd = ${arg}
+inner join Supplier
+on Supplier.SID = PurchM.SID
+inner join Stock 
+on Stock.Name = Purchase.Name `)
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "searchstockno",
             recordset.recordset
           );
           conn.close();

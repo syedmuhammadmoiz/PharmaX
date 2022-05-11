@@ -21,8 +21,6 @@ const InvoiceReturnView = () => {
   const [invoicev, setinvoicev] = useState([]);
   const [total, settotal] = useState(0.0);
 
-
-
   const nevigate = useNavigate();
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./tableView.css";
 
 const Emptytables = ({ length }) => {
@@ -86,11 +86,12 @@ const TableView = ({
                   <td className="center">{item.SNO}</td>
                   <td className="center">{item.Code}</td>
                   <td>{item.Name}</td>
-                  <td className="center">{item.Batch}</td>
-                  <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
-                  <td className="center">{item.Bon}</td>
-                  <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
+                  <td className="center">{item.Retail}</td>
+                  <td className="center">{item.CDisc}</td>
+                  <td className="center">{item.TP}</td>
                   <td className="center">{item.Qty}</td>
+                  <td className="center">{item.Bon}</td>
+                  <td className="center">{item.STP}</td>
                   <td className="center">{item.Disc}</td>
                   <td className="center">
                     {parseFloat(item.STP * item.Qty).toFixed(2)}
