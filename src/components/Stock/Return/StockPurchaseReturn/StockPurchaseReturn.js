@@ -91,6 +91,13 @@ const StockPurchaseReturn = () => {
       setDisables(true);
     }
   };
+   ipcRenderer.on( "searchcrdno", (event, arg) => {
+    setCustomer({
+      Name:arg[0].SuppName,
+      Address:arg[0].Address,
+      SID:arg[0].SID,
+    })
+  })
 
   ipcRenderer.on("setfalse", (event) => {
     setDisables(false);
@@ -107,7 +114,7 @@ const StockPurchaseReturn = () => {
     ipcRenderer.send("typereturn")
   
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
-      ipcRenderer.send("searchinvno", id);
+      ipcRenderer.send("searchcrdno", id);
       setsaveinvoice((saveinvoice) => ({
         ...saveinvoice,
         invNo: id,

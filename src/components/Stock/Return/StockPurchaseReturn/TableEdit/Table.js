@@ -135,20 +135,11 @@ const Table = ({
 
   const focusNextRef = useFocusNext();
 
-  //search the input in the database
-  const searchindatabase = (e) => {
-    setsearch(e.target.value);
-  };
-  //get the data from the database and send it to the table
-  ipcRenderer.on("search", (event, arg) => {
-    setdata(arg);
-  });
-
-  ipcRenderer.on("searchinvno", (event, arg) => {
-    console.log(arg)
+   ipcRenderer.on("searchcrdno", (event, arg) => {
     if (arg.length > 0) {
+      console.log(arg)
       const data = arg.map((element) => ({
-          Batch: element.Batch,
+        Batch: element.Batch,
         Bonus: -1,
         Code: element.Code,
         Cost: 0,
@@ -172,9 +163,17 @@ const Table = ({
       }));
     }
   });
+
+  //search the input in the database
+  const searchindatabase = (e) => {
+    setsearch(e.target.value);
+  };
+  //get the data from the database and send it to the table
+  ipcRenderer.on("search", (event, arg) => {
+    setdata(arg);
+  });
   //generating the invoice
   const senddatatoinvoice = (item) => {
-    console.log(invoice)
     setShow(!show);
     setcurrentdata((currentdata) => ({
       ...currentdata,
@@ -186,7 +185,6 @@ const Table = ({
       TP: Math.floor(item.TP),
       Name: item.Name,
       Crd:invoice,
-      // Expiry: moment(element.Dat).format("YYYY-MM-DD"),
       Price: Math.floor(item.Price),
       Disc1: item.Disc1,
       Stax: item.Stax,

@@ -29,7 +29,7 @@ const App = () => {
           element={<InvoiceReturnView />}
         ></Route>
         <Route
-          path="/StockPurchaseReturn"
+          path="/StockPurchaseReturn/:id"
           element={<StockPurchaseReturn />}
         ></Route>
         <Route

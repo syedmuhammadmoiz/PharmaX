@@ -9,12 +9,10 @@ import { ipcRenderer } from "electron";
 import { useNavigate } from "react-router-dom";
 
 const StockPurchaseReturnView = () => {
-  const [customer, setCustomer] = useState("General");
-  const [singleC, setsingleC] = useState({});
-  const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
+  const [customer, setCustomer] = useState({});
+  const [singleC, setsingleC] = useState({})
+  const [returntype, setReturntype] = useState({})
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [invoiceno, setinvoiceno] = useState("");
@@ -28,29 +26,33 @@ const StockPurchaseReturnView = () => {
     }
   };
 
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
-  });
-  ipcRenderer.on("searchinvno", (event, arg) => {
+
+  ipcRenderer.on("searchcrdno", (event, arg) => {
     if (arg.length > 0) {
       setinvoicev(arg);
+      setCustomer({
+        Name: arg[0].SuppName,
+        SID: arg[0].SID,
+        Address:arg[0].Address
+      })
       let InvDate = new Date(arg[0].Dat);
       setDate(InvDate.toLocaleDateString());
-      setTime(arg[0].InvTime);
       settotal(arg.reduce((total, item) => total + item.STP * item.Qty, 0));
     } else {
     }
-  });
-  ipcRenderer.on("customer", (event, arg) => {
-    setsingleC(arg[0]);
+  })
+
+  ipcRenderer.on("typereturn", (event, arg) => {
+    console.log(arg)
+    setReturntype(arg[0])
   });
 
   const invoicekeydown = (e) => {
     if (e.key === "Enter") {
       if (invoiceno.length === 0) {
-        ipcRenderer.send("error", "Please Enter the Invoice No");
+        ipcRenderer.send("error", "Please Enter the Card No");
       } else {
-        ipcRenderer.send("searchinvno", invoiceno);
+        ipcRenderer.send("searchcrdno", invoiceno);
       }
     }
   };
@@ -59,7 +61,7 @@ const StockPurchaseReturnView = () => {
     setinvoicev([]);
     setinvoiceno("");
     setDate("");
-    setTime("");
+
   };
   //save to database
   const savetodatabase = (e) => {
@@ -68,15 +70,14 @@ const StockPurchaseReturnView = () => {
       console.log("here");
       ipcRenderer.send("error", "Please select the Invoice to Edit");
     } else {
-      nevigate(`/invoice/${invoiceno}`);
+      nevigate(`/StockPurchaseReturn/${invoiceno}`);
     }
   };
   function callfunction() {}
   const sideBarToggle = () => setSideBar(!sideBar);
 
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer", customer);
+    ipcRenderer.send("typereturn")
   }, []);
 
   return (
@@ -110,35 +111,21 @@ const StockPurchaseReturnView = () => {
                     onChange={(e) => {
                       customerdropdown(e);
                     }}
-                    value={customer}
+                    value={customer.Name}
                     style={{ textAlign: "center" }}
-                    list="browsers"
                   />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
                   <input
                     type="text"
                     name="name"
-                    value={customer}
+                    value={customer.SID}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
+    
                   />
                   <input
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={singleC.Contact}
+                    value={customer.Address}
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -153,7 +140,7 @@ const StockPurchaseReturnView = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
+                    value={returntype.TypeName}
                     style={{ textAlign: "center" }}
                   />
                   <input

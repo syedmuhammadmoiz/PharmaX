@@ -69,7 +69,7 @@ const Mainpage = () => {
                 <p>Inv. Return View</p>
               </div>
             </Link>
-            <Link to="/StockPurchaseReturn" className="link">
+            <Link to="/StockPurchaseReturn/0" className="link">
               <div className="card">
                 <img src={purre_png} alt="invoice" />
 

@@ -473,3 +473,38 @@ global.share.ipcMain.on("purchasereturndata", (event, arg) => {
       console.log(err)
     })
 })
+
+
+// Search invoice by CRd no.
+
+global.share.ipcMain.on("searchcrdno", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`SELECT  PRetM.RNDT,PRetM.Crd, PRetM.Dat,Supplier.Address ,PRetM.SID, PRetM.SuppName, PRetM.TypID,PReturn.SNO, PReturn.Code, PReturn.Name,  PReturn.Retail, PReturn.CDisc, PReturn.TP, PReturn.Qty, PReturn.Bon,   PReturn.STP, PReturn.Disc
+              from PReturn
+              INNER JOIN PRetM
+              ON PRetM.Crd = ${arg} and PReturn.Crd = ${arg}
+              INNER Join Supplier
+              on Supplier.Name = PRetM.SuppName
+          `)
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "searchcrdno",
+            recordset.recordset
+          );
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});

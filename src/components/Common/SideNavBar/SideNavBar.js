@@ -37,7 +37,7 @@ const SideNavBar = ({ sideBar, sideBarToggle }) => {
             Inv. Return View
           </Link>
 
-          <Link className="links" to="/StockPurchaseReturn">
+          <Link className="links" to="/StockPurchaseReturn/0">
             Purchase Return
           </Link>
 
