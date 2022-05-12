@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Table from "./TableEdit/Table";
 import purre_png from "../../../../../assets/img/purre.png";
@@ -11,16 +11,12 @@ import { useNavigate } from "react-router-dom";
 
 const StockPurchaseReturn = () => {
   const [customer, setCustomer] = useState("");
-  const [singleC, setsingleC] = useState({});
-  const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
-  const [date, setDate] = useState("");
-  const [invoice, setInvoice] = useState("");
-  const [time, setTime] = useState("");
+  const [invoice, setInvoice] = useState("")
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
+  const [returntype, setReturntype] = useState({})
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -40,11 +36,6 @@ const StockPurchaseReturn = () => {
     "/" +
     currentdate.getFullYear();
 
-  useMemo(() => {
-    setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-  }, []);
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
@@ -54,8 +45,17 @@ const StockPurchaseReturn = () => {
   const clearinvoice = useRef();
   const clearcurrent = useRef();
 
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
+   ipcRenderer.on("prno", (event, arg) => {
+    setInvoice(arg[0].CRD + 1);
+    setsaveinvoice((saveinvoice) => ({
+      ...saveinvoice,
+      invNo: arg[0].CRD + 1,
+      RandomNo: randomString(),
+    }));
+  });
+
+  ipcRenderer.on("typereturn", (event, arg) => {
+    setReturntype(arg[0])
   });
   const randomString = () => {
     var text = "";
@@ -65,42 +65,29 @@ const StockPurchaseReturn = () => {
     }
     return text;
   };
-  ipcRenderer.on("invno", (event, arg) => {
-    setInvoice(arg[0].InvNo + 1);
-    setsaveinvoice((saveinvoice) => ({
-      ...saveinvoice,
-      invNo: arg[0].InvNo + 1,
-      RandomNo: randomString(),
-    }));
-  });
-  ipcRenderer.on("customer", (event, arg) => {
-    setcustomers(arg);
-    arg.map((item) => {
-      if (item.Name === customer) setsingleC(item);
-    });
-  });
+
 
   const customerdropdown = (e) => {
     setCustomer(e.target.value);
-    ipcRenderer.send("customer", e.target.value);
+    ipcRenderer.send("selectsupplier", e.target.value);
   };
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
     if (customer.length === 0) {
-      ipcRenderer.send("error", "Please select customer");
+      ipcRenderer.send("error", "Please select Supplier");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
     } else {
       let data = {
-        InvNo: saveinvoice.invNo,
+        card: saveinvoice.invNo,
+        SID:customer.SID, 
+        type: returntype.TypID,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
         RandomNo: saveinvoice.RandomNo,
-        totalMedicine:
-          saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
       };
-      ipcRenderer.send("saveintodatabase", data);
+      ipcRenderer.send("purchasereturndata", data);
       setDisables(true);
     }
   };
@@ -108,12 +95,17 @@ const StockPurchaseReturn = () => {
   ipcRenderer.on("setfalse", (event) => {
     setDisables(false);
   });
+  ipcRenderer.on("getsupplier", (event, arg) => {
+    if (arg.length > 0) {
+      setCustomer(arg[0]);
+    }
+  });
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer");
+    ipcRenderer.send("typereturn")
+  
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchinvno", id);
       setsaveinvoice((saveinvoice) => ({
@@ -123,7 +115,7 @@ const StockPurchaseReturn = () => {
       setInvoice(id);
       setnotelete(true);
     } else {
-      ipcRenderer.send("invno");
+       ipcRenderer.send("prno");
     }
   }, []);
 
@@ -158,27 +150,13 @@ const StockPurchaseReturn = () => {
                     onChange={(e) => {
                       customerdropdown(e);
                     }}
-                    value={customer}
+                    value={customer.SID}
                     style={{ textAlign: "center" }}
-                    list="browsers"
                   />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
                   <input
                     type="text"
                     name="name"
-                    value={customer}
+                    value={customer.Name}
                     style={{ textAlign: "center" }}
                     onChange={(e) => setCustomer(e.target.value)}
                   />
@@ -187,7 +165,7 @@ const StockPurchaseReturn = () => {
                     className="lastinput"
                     type="text"
                     name="name"
-                    value={singleC.Contact}
+                    value={customer.Address}
                     style={{ textAlign: "center" }}
                   />
                 </div>
@@ -202,9 +180,8 @@ const StockPurchaseReturn = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
+                    value={returntype.TypeName}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setDate(e.target.value)}
                   />
                   <input
                     disabled
@@ -255,7 +232,7 @@ const StockPurchaseReturn = () => {
                 <button
                   className="button_main"
                   onClick={(e) => {
-                    console.log("here");
+                 
                     navigate(0);
                   }}
                 >

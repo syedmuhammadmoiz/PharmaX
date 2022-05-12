@@ -276,35 +276,31 @@ global.share.ipcMain.on("stockintodatabase", (event, arg) => {
           `
               )
               .then(function (recordset) {
-                console.log(recordset.recordset);
-                // global.share.mainWindow.webContents.send(
-                //   "searchinvno",
-                //   recordset.recordset
-                // );
-                conn.close();
+                console.log(recordset.recordset)
+                conn.close()
               })
               .catch(function (err) {
-                console.log(err);
-                conn.close();
+                console.log(err)
+                conn.close()
               });
-            console.log("connection is created");
+            console.log("connection is created")
           })
           .catch(function (err) {
-            console.log(err);
+            console.log(err)
           });
       } else {
-        global.share.mainWindow.webContents.send("setfalse");
+        global.share.mainWindow.webContents.send("setfalse")
       }
     })
     .catch((err) => {
-      console.log(err);
-    });
-});
+      console.log(err)
+    })
+})
 
 //Get Card Number
 
 global.share.ipcMain.on("cardno", (event, arg) => {
-  var conn = new sql.ConnectionPool(sqlConfig);
+  var conn = new sql.ConnectionPool(sqlConfig)
   conn
     .connect()
     .then(function () {
@@ -316,12 +312,12 @@ global.share.ipcMain.on("cardno", (event, arg) => {
             "cardno",
             recordset.recordset
           );
-          conn.close();
+          conn.close()
         })
         .catch(function (err) {
-          console.log(err);
-          conn.close();
-        });
+          console.log(err)
+          conn.close()
+        })
       console.log("connection is created");
     })
     .catch(function (err) {
@@ -339,13 +335,13 @@ global.share.ipcMain.on("searchstockno", (event, arg) => {
       var request = new sql.Request(conn);
       request
         .query(`SELECT  PurchM.RNDT,PurchM.CRD, PurchM.Builty, Stock.Batch, Supplier.Name as Supplier_Name, Supplier.Address,  PurchM.SID, PurchM.Transport,Purchase.SNO, Purchase.Code, Purchase.Name,  Purchase.Retail, Purchase.CDisc, Purchase.TP, Purchase.Qty, Purchase.Bon, Purchase.Stax,  Purchase.STP, Purchase.Disc,PurchM.Dat 
-from Purchase
-INNER JOIN PurchM
-ON PurchM.CRD =  ${arg} and Purchase.Crd = ${arg}
-inner join Supplier
-on Supplier.SID = PurchM.SID
-inner join Stock 
-on Stock.Name = Purchase.Name `)
+                from Purchase
+                INNER JOIN PurchM
+                ON PurchM.CRD =  ${arg} and Purchase.Crd = ${arg}
+                inner join Supplier
+                on Supplier.SID = PurchM.SID
+                inner join Stock 
+                on Stock.Name = Purchase.Name `)
         .then(function (recordset) {
           global.share.mainWindow.webContents.send(
             "searchstockno",
@@ -363,3 +359,117 @@ on Stock.Name = Purchase.Name `)
       console.log(err);
     });
 });
+
+//Get Typereturn
+
+global.share.ipcMain.on("typereturn", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig)
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`select * from ReturnType`)
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "typereturn",
+            recordset.recordset
+          );
+          conn.close()
+        })
+        .catch(function (err) {
+          console.log(err)
+          conn.close()
+        })
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+
+//Get Card Number
+
+global.share.ipcMain.on("prno", (event, arg) => {
+  var conn = new sql.ConnectionPool(sqlConfig)
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`select max(CRD) as CRD from PRetM`)
+        .then(function (recordset) {
+          global.share.mainWindow.webContents.send(
+            "prno",
+            recordset.recordset
+          );
+          conn.close()
+        })
+        .catch(function (err) {
+          console.log(err)
+          conn.close()
+        })
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+
+// Save purchase return into database
+
+global.share.ipcMain.on("purchasereturndata", (event, arg) => {
+  dialog
+    .showMessageBox({
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: "Save Invoice",
+      message: "Do you want to save this Stock?",
+    })
+    .then((box) => {
+      if (box.response == 0) {
+        console.log(arg)
+        var conn = new sql.ConnectionPool(sqlConfig);
+        conn
+          .connect()
+          .then(function () {
+            console.log(arg);
+            var request = new sql.Request(conn);
+            request
+              .query(
+                `
+          DECLARE @f NVARCHAR(MAX) = N'${JSON.stringify(arg.newInvoice)}'
+          DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
+          EXECUTE Generate_Purchase_Return
+          @files = @f, 
+          @insert = @i, 
+          @RNDT = ${arg.RandomNo}, 
+          @card = ${arg.card},
+          @SID  = ${arg.SID}, 
+          @type  = ${arg.type}, 
+          @usr = 'moiz'
+          `
+              )
+              .then(function (recordset) {
+                console.log(recordset.recordset)
+                conn.close()
+              })
+              .catch(function (err) {
+                console.log(err)
+                conn.close()
+              });
+            console.log("connection is created")
+          })
+          .catch(function (err) {
+            console.log(err)
+          });
+      } else {
+        global.share.mainWindow.webContents.send("setfalse")
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+})
