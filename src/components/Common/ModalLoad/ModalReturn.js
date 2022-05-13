@@ -2,13 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import "./modalReturn.css";
 import Close from "../../../../assets/img/close.png";
 import { ipcRenderer } from "electron";
+import moment from "moment";
 
 const ModalReturn = ({
   modalToggle,
   setShow,
   senddatatoinvoice,
   data,
+  loadinvoice,
   setdata,
+  setloadinvoicen
 }) => {
   const [search, setsearch] = useState("");
   const [modalRow, setModalRow] = useState(0);
@@ -53,7 +56,6 @@ const ModalReturn = ({
 
   const closeModalIfClickedOutside = (e) => {
     if (e.target.className === "modal_cover") {
-      console.log("here");
       setShow(false);
     }
   };
@@ -77,9 +79,11 @@ const ModalReturn = ({
   ];
 
   const onChangeAttribute = (value) => {
-    console.log(value);
+    setloadinvoicen(value);
     setCheck(value);
+  
   };
+
 
   return (
     <div className="modal_cover" onClick={closeModalIfClickedOutside}>
@@ -99,62 +103,26 @@ const ModalReturn = ({
           </div>
           <div className="table-scroll scroll-height">
             <div className="checkbox-modal">
-              {options.map((item) => (
-                <label for={item.value}>
+              {(loadinvoice.length >0) ? loadinvoice.map((item) => (
+                <label for={item.InvNo}>
                   <input
                     type="checkbox"
-                    id={item.value}
-                    name={item.label}
-                    value={item.value}
-                    checked={check === item.value}
+                    id={item.InvNo}
+                    name={item.InvNo}
+                    value={item.InvNo}
+                    checked={check === item.InvNo}
                     className="return_modal_input"
-                    onChange={(e) => onChangeAttribute(item.value)}
+                    onChange={(e) => onChangeAttribute(item.InvNo)}
                   />
-                  {item.value}
-                  <span className="space">{item.label}</span>{" "}
-                  <span className="space">{item.label1}</span>
+                  {item.InvNo}
+                  <span className="space">{item.Name}</span>{" "}
+                  <span className="space">{moment(item.Dat).format('YYYY MM DD')}</span>
                 </label>
-              ))}
-
-              {/* <label>
-              <input type="checkbox" className="return_modal_input" />2
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />3
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />4
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />5
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />6
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />7
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label>
-            <label>
-              <input type="checkbox" className="return_modal_input" />8
-              <span className="space">General</span>{" "}
-              <span className="space">2/12/2022</span>
-            </label> */}
+              )):""}
             </div>
           </div>
           <div className="return_modal_buttons">
-            <button className="return_button">OK</button>
+            <button className="return_button" onClick={()=>{  setShow(false)}}>OK</button>
             <button className="return_button" onClick={modalToggle}>
               Cancel
             </button>

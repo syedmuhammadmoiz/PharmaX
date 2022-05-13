@@ -11,14 +11,22 @@ const InvoiceReturn = () => {
   const [customer, setCustomer] = useState("");
   const [singleC, setsingleC] = useState({});
   const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
+  const [salesman, setSalesman] = useState({});
   const [date, setDate] = useState("");
   const [invoice, setInvoice] = useState("");
   const [time, setTime] = useState("");
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [saveinvoice, setsaveinvoice] = useState([]);
+  const [saveinvoice, setsaveinvoice] = useState({
+    invNo: "",
+    invoiceEdit: [],
+    newInvoice: [],
+    totalMedicine: 0,
+    RandomNo: "",
+  });
+  const [loadinvoice,setloadinvoice] = useState({})
+  const [loadinvoicen,setloadinvoicen] = useState(0)
 
   const [show, setShow] = useState(false); //show model
 
@@ -41,12 +49,25 @@ const InvoiceReturn = () => {
       setTableSelect(null);
     }
   };
-
+  ipcRenderer.on('loadinvoice', (event, data) => {
+    console.log(data)
+    setloadinvoice(data)
+  })
+ const getinvoices = ()=>{
+   setShow(!show)
+   setloadinvoice({})
+   setloadinvoicen(0)
+   ipcRenderer.send('loadinvoice')
+ }
   const clearinvoice = useRef();
   const clearcurrent = useRef();
 
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
+  
+
+  ipcRenderer.on("searchinvno", (event, arg) => {
+    setSalesman(arg[0])
+
+      
   });
   ipcRenderer.on("invno", (event, arg) => {
     setInvoice(arg[0].InvNo + 1);
@@ -61,6 +82,7 @@ const InvoiceReturn = () => {
     setCustomer(e.target.value);
     ipcRenderer.send("customer", e.target.value);
   };
+  
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
@@ -75,15 +97,17 @@ const InvoiceReturn = () => {
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer");
-    ipcRenderer.send("invno");
-  }, []);
+    if(show == false && loadinvoicen != 0){
+      ipcRenderer.send('loadinvoicebyno',loadinvoicen)
+    }
+
+  },[show])
+
 
   return (
     <>
       <TopNavBar />
-      {show ? <ModalLoad modalToggle={modalToggle} setShow={setShow} /> : null}
+      {show ? <ModalLoad modalToggle={modalToggle} loadinvoice={loadinvoice} setloadinvoicen={setloadinvoicen} setShow={setShow} /> : null}
       <div className="back_cover">
         <SideNavBar sideBar={sideBar} sideBarToggle={sideBarToggle} />
         <div className="cover_margin">
@@ -111,44 +135,29 @@ const InvoiceReturn = () => {
                     <input
                       type="text"
                       className="Id-input"
+                      value={salesman.CID}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="cus-input imp"
                       type="text"
                       name="name"
-                      onChange={(e) => {
-                        customerdropdown(e);
-                      }}
-                      value={customer}
+                      value={salesman.CName}
                       style={{ textAlign: "center" }}
-                      list="browsers"
+                      
                     />
-                    <datalist id="browsers">
-                      {customers.map((item, index) => (
-                        <option
-                          onClick={() => {
-                            console.log("here");
-                          }}
-                          value={item.Name}
-                          key={index}
-                        >
-                          {item.Name}
-                        </option>
-                      ))}
-                    </datalist>
                   </div>
                   <input
                     type="text"
                     name="name"
-                    value={singleC.Address}
+                    value={salesman.Address}
                     style={{ textAlign: "center" }}
                   />
 
                   <input
                     type="text"
                     name="name"
-                    value={singleC.Contact}
+                    value={salesman.Contact}
                     style={{ textAlign: "center" }}
                   />
                   <div className="input-flex">
@@ -156,12 +165,13 @@ const InvoiceReturn = () => {
                       type="text"
                       className="Id-input"
                       style={{ textAlign: "center" }}
+                      value={salesman.SMID}
                     />
                     <input
                       className="lastinput cus-input"
                       type="text"
                       name="name"
-                      value={salesman}
+                      value={salesman.SName}
                       style={{ textAlign: "center" }}
                       onChange={(e) => setDate(e.target.value)}
                     />
@@ -240,7 +250,7 @@ const InvoiceReturn = () => {
                 </button>
                 <button
                   className="button_border"
-                  onClick={() => setShow(!show)}
+                  onClick={() => getinvoices()}
                 >
                   Load Inv.
                 </button>
