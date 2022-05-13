@@ -135,17 +135,9 @@ const Table = ({
 
   const focusNextRef = useFocusNext();
 
-  //search the input in the database
-  const searchindatabase = (e) => {
-    setsearch(e.target.value);
-  };
-  //get the data from the database and send it to the table
-  ipcRenderer.on("search", (event, arg) => {
-    setdata(arg);
-  });
-
-  ipcRenderer.on("searchinvno", (event, arg) => {
+   ipcRenderer.on("searchcrdno", (event, arg) => {
     if (arg.length > 0) {
+      console.log(arg)
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -154,7 +146,7 @@ const Table = ({
         Disc1: 0,
         Name: element.Name,
         Price: element.STP,
-        Quantity: element.Qty,
+        Quantity: parseInt(element.Qty),
         STP: element.STP,
         Total: element.STP * element.Qty,
         TP: element.STP,
@@ -171,6 +163,15 @@ const Table = ({
       }));
     }
   });
+
+  //search the input in the database
+  const searchindatabase = (e) => {
+    setsearch(e.target.value);
+  };
+  //get the data from the database and send it to the table
+  ipcRenderer.on("search", (event, arg) => {
+    setdata(arg);
+  });
   //generating the invoice
   const senddatatoinvoice = (item) => {
     setShow(!show);
@@ -183,6 +184,7 @@ const Table = ({
       Cost: Math.floor(item.Cost),
       TP: Math.floor(item.TP),
       Name: item.Name,
+      Crd:invoice,
       Price: Math.floor(item.Price),
       Disc1: item.Disc1,
       Stax: item.Stax,
@@ -204,7 +206,7 @@ const Table = ({
           Quantity: quantity,
           Disc1: disc,
           selected: false,
-          invoiceno: Invoice,
+          Crd: Invoice,
           RNDT: saveinvoice.RandomNo,
           profit: Math.floor(currentdata.Total - currentdata.Cost * quantity),
         }));
@@ -408,7 +410,7 @@ const Table = ({
                 value={
                   currentdata.Price == ""
                     ? ""
-                    : parseFloat(currentdata.STP.toFixed(2))
+                    : parseFloat(currentdata.Disc1.toFixed(2))
                 }
                 type="text"
                 name="trip-start"
@@ -422,7 +424,7 @@ const Table = ({
                 id="Bonus"
                 type="text"
                 ref={focusNextRef}
-                value={currentdata.length == 0 ? "" : currentdata.Bonus}
+                value={currentdata.length == 0 ? "" : currentdata.TP}
                 name="name"
               />
             </th>
@@ -433,7 +435,7 @@ const Table = ({
                 id="saleTax"
                 type="text"
                 ref={focusNextRef}
-                value={currentdata.length == 0 ? "" : currentdata.Stax}
+                value={currentdata.length == 0 ? "" : currentdata.Bonus}
                 name="name"
               />
             </th>
@@ -460,7 +462,7 @@ const Table = ({
                 onChange={(e) => {
                   dischandler(e);
                 }}
-                value={disc}
+                value={currentdata.STP}
                 name="name"
               />
             </th>
@@ -498,8 +500,8 @@ const Table = ({
             <th className="input-same-1">Retail</th>
             <th className="input-same-1">CDisc</th>
             <th className="input-same-1">TP</th>
-            <th className="input-same-1">Qunatity</th>
             <th className="input-same-1">Bon</th>
+            <th className="input-same-1">Qunatity</th>
             <th className="input-same-1">STP</th>
             <th className="input-same-1">Disc</th>
             <th className="input-same-2">Net Amount</th>
@@ -520,11 +522,11 @@ const Table = ({
                   <td className="center">{item.Code}</td>
                   <td>{item.Name}</td>
                   <td className="center">{item.Batch}</td>
-                  <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
-                  <td className="center">{item.Bonus}</td>
-                  <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
+                  <td className="center">{parseFloat(item.Disc1.toFixed(2))}</td>
+                  <td className="center">{item.TP}</td>
+                  <td className="center">{parseFloat(item.Bonus.toFixed(2))}</td>
                   <td className="center">{item.Quantity}</td>
-                  <td className="center">{item.Disc1}</td>
+                  <td className="center">{ parseFloat(item.STP.toFixed(2))}</td>
                   <td className="center">{item.Disc1}</td>
                   <td className="center">
                     {parseFloat(item.Total.toFixed(2))}

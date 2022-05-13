@@ -10,10 +10,8 @@ import { ipcRenderer } from "electron";
 import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = () => {
-  const [customer, setCustomer] = useState("");
-  const [singleC, setsingleC] = useState({});
-  const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
+  const [customers, setcustomers] = useState({});
+  const [salesman, setSalesman] = useState({});
   const [date, setDate] = useState("");
   const [invoice, setInvoice] = useState("");
   const [time, setTime] = useState("");
@@ -55,8 +53,24 @@ const InvoiceTable = () => {
   const clearcurrent = useRef();
 
   ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
+    if(arg.length > 0){
+      console.log(arg)
+    setSalesman({
+      Name:arg[0].Name,
+      SMID:arg[0].SMID
+    })}
   });
+  const selectsalesman =(e)=>{
+    console.log(e.target.value)
+    setSalesman({
+      SMID:e.target.value,
+      Name:"",
+    })
+    if(e.target.value != ""){
+    ipcRenderer.send("salesman",e.target.value)
+  }
+  }
+  
   const randomString = () => {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -74,20 +88,24 @@ const InvoiceTable = () => {
     }));
   });
   ipcRenderer.on("customer", (event, arg) => {
-    setcustomers(arg);
-    arg.map((item) => {
-      if (item.Name === customer) setsingleC(item);
-    });
+    if(arg.length > 0){
+    setcustomers(arg[0])
+    }
   });
 
   const customerdropdown = (e) => {
-    setCustomer(e.target.value);
+    setcustomers({
+      Name: e.target.value,
+      Address: "",
+      Contact:"",
+      Balance:""
+    });
     ipcRenderer.send("customer", e.target.value);
   };
   //save to database
   const savetodatabase = (e) => {
     e.preventDefault();
-    if (customer.length === 0) {
+    if (customers.length === 0) {
       ipcRenderer.send("error", "Please select customer");
     } else if (saveinvoice.length === 0) {
       ipcRenderer.send("error", "Please select the Medicine");
@@ -112,8 +130,6 @@ const InvoiceTable = () => {
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer");
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchinvno", id);
       setsaveinvoice((saveinvoice) => ({
@@ -157,59 +173,47 @@ const InvoiceTable = () => {
                     <input
                       type="text"
                       className="Id-input"
+                      onChange={(e) => {
+                        customerdropdown(e);
+                      }}
+                      value={customers.CID}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="cus-input imp"
                       type="text"
                       name="name"
-                      onChange={(e) => {
-                        customerdropdown(e);
-                      }}
-                      value={customer}
+                      value={customers.Name}
                       style={{ textAlign: "center" }}
-                      list="browsers"
                     />
-                    <datalist id="browsers">
-                      {customers.map((item, index) => (
-                        <option
-                          onClick={() => {
-                            console.log("here");
-                          }}
-                          value={item.Name}
-                          key={index}
-                        >
-                          {item.Name}
-                        </option>
-                      ))}
-                    </datalist>
                   </div>
                   <input
                     type="text"
                     name="name"
-                    value={singleC.Address}
+                    value={customers.Address}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
                   />
                   <input
                     type="text"
                     name="name"
-                    value={singleC.Contact}
+                    value={customers.Contact}
                     style={{ textAlign: "center" }}
                   />
                   <div className="input-flex">
                     <input
                       type="text"
                       className="Id-input"
+                      value={salesman.SMID}
+                      onChange={(e) => {selectsalesman(e)}}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="lastinput cus-input"
                       type="text"
                       name="name"
-                      value={salesman}
+                      value={salesman.Name}
                       style={{ textAlign: "center" }}
-                      onChange={(e) => setDate(e.target.value)}
+                     
                     />
                   </div>
                 </div>
@@ -227,12 +231,14 @@ const InvoiceTable = () => {
                       type="text"
                       className="input-total"
                       name="name"
+                      value={customers.Balance}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       type="text"
                       className="input-total"
                       name="name"
+                      
                       style={{ textAlign: "center" }}
                     />
                   </div>

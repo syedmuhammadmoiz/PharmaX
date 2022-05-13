@@ -145,6 +145,7 @@ const Table = ({
 
   ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
+ 
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,

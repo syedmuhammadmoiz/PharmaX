@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Modal from "../../../../Common/Modal/Modal";
 import { ipcRenderer } from "electron";
+import moment from "moment";
 import "./Table.css";
 
 const Emptytables = ({ length }) => {
@@ -43,6 +44,7 @@ const Table = ({
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
+  const [Expiry, setExpiry] = useState("");
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -86,6 +88,7 @@ const Table = ({
   //on Double click to select table row for edit
   const onDoubleClicktoedit = (index) => {
     invoice[index].selected = true;
+    setExpiry(invoice[index].Expiry);
     setcurrentdata(invoice[index]);
     setsearch(invoice[index].Code);
     setquantity(invoice[index].Quantity);
@@ -144,8 +147,10 @@ const Table = ({
     setdata(arg);
   });
 
-  ipcRenderer.on("searchinvno", (event, arg) => {
+  ipcRenderer.on("searchstockno", (event, arg) => {
+
     if (arg.length > 0) {
+      console.log(arg)
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -154,7 +159,8 @@ const Table = ({
         Disc1: 0,
         Name: element.Name,
         Price: element.STP,
-        Quantity: element.Qty,
+        Quantity: parseInt(element.Qty),
+        Expiry: moment(element.Dat).format("YYYY-MM-DD"),
         STP: element.STP,
         Total: element.STP * element.Qty,
         TP: element.STP,
@@ -196,25 +202,29 @@ const Table = ({
   //generating invoice
   const putdataintoinvoice = (e) => {
     if (e.key.toLowerCase() === "enter") {
-      if (quantity != null && quantity != 0) {
+      if (quantity != null && quantity != 0 && Expiry != "") {
         billcalculation();
         setcurrentdata((currentdata) => ({
           ...currentdata,
           Total: Math.floor(quantity * currentdata.STP),
-          Quantity: quantity,
+          Quantity: parseInt(quantity),
           Disc1: disc,
           selected: false,
-          invoiceno: Invoice,
+          Crd: parseInt(Invoice),
+          Expiry: Expiry,
           RNDT: saveinvoice.RandomNo,
           profit: Math.floor(currentdata.Total - currentdata.Cost * quantity),
         }));
         setquantity(null);
         setsearch("");
         setdisc("");
+        setExpiry("");
         setTableSelect(null);
         refback.current?.focus();
       } else if (currentdata.Code == "") {
         ipcRenderer.send("error", "Please Select the Medicine");
+      } else if (Expiry == "") {
+        ipcRenderer.send("error", "please Enter the Expiry");
       } else {
         ipcRenderer.send("error", "Please Enter the Quantity");
       }
@@ -268,6 +278,7 @@ const Table = ({
     setdisc("");
     setquantity("");
     setcurrentdata(reset);
+    setExpiry("");
     setTableSelect(null);
     ipcRenderer.send("invno");
   }
@@ -280,6 +291,7 @@ const Table = ({
       setdisc("");
       setquantity("");
       setcurrentdata(reset);
+      setExpiry("");
       setTableSelect(null);
     }
   }
@@ -404,14 +416,13 @@ const Table = ({
             <th>
               <input
                 className="input-same-1 center"
-                id="Expdate"
-                // value={
-                //   currentdata.Price == ""
-                //     ? ""
-                //     : parseFloat(currentdata.STP.toFixed(2))
-                // }
+                id="ExpExpiry"
                 type="date"
                 name="trip-start"
+                value={Expiry}
+                onChange={(e) => {
+                  setExpiry(e.target.value);
+                }}
                 ref={focusNextRef}
               />
             </th>
@@ -433,7 +444,7 @@ const Table = ({
                 id="saleTax"
                 type="text"
                 ref={focusNextRef}
-                value={currentdata.length == 0 ? "" : currentdata.Stax}
+                value={currentdata.length == 0 ? "" : currentdata.TP}
                 name="name"
               />
             </th>
@@ -473,7 +484,7 @@ const Table = ({
                 onChange={(e) => {
                   dischandler(e);
                 }}
-                value={disc}
+                value={Math.round(currentdata.STP)}
                 name="name"
               />
             </th>
@@ -496,7 +507,7 @@ const Table = ({
             <th className="input-same-1">Code</th>
             <th className="input-same-3">Item Name</th>
             <th className="input-same-1">Batch</th>
-            <th className="input-same-1">ExpDate</th>
+            <th className="input-same-1">ExpExpiry</th>
             <th className="input-same-1">Retail</th>
             <th className="input-same-1">TP</th>
             <th className="input-same-1">Qunatity</th>
@@ -520,12 +531,12 @@ const Table = ({
                   <td className="center">{item.Code}</td>
                   <td>{item.Name}</td>
                   <td className="center">{item.Batch}</td>
-                  <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
+                  <td className="center">{item.Expiry}</td>
                   <td className="center">{item.Bonus}</td>
-                  <td className="center">{parseFloat(item.Stax.toFixed(2))}</td>
+                  <td className="center">{parseFloat(item.TP.toFixed(2))}</td>
                   <td className="center">{item.Quantity}</td>
                   <td className="center">{item.Disc1}</td>
-                  <td className="center">{item.Disc1}</td>
+                  <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
                   <td className="center">
                     {parseFloat(item.Total.toFixed(2))}
                   </td>
