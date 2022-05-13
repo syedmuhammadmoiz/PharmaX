@@ -250,15 +250,19 @@ const InvoiceReturn = () => {
               </div>
               <div className="total">
                 <div className="col">
-                  <div> Net total</div>
-                  <div> Disc</div>
                   <div className="final_total">Total</div>
+                  <div className="amount">Amount:</div>
                 </div>
                 <div className="col">
-                  <div> 0.00</div>
-                  <div> 0.00</div>
                   <div className="final_total">
                     {parseFloat(netTotal.toFixed(2))}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      className="bal_input"
+                      style={{ textAlign: "center" }}
+                    />
                   </div>
                 </div>
               </div>

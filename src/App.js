@@ -10,6 +10,10 @@ import InvoiceReturn from "./components/Invoice/Return/InvoiceReturn/InvoiceRetu
 import InvoiceReturnView from "./components/Invoice/Return/InvoiceReturnView/InvoiceReturnView";
 import StockPurchaseReturn from "./components/Stock/Return/StockPurchaseReturn/StockPurchaseReturn";
 import StockPurchaseReturnView from "./components/Stock/Return/StockPurchaseReturnView/StockPurchaseReturnView";
+import AddingCus from "./components/AddingCustomer/AddingCus";
+import AddingS from "./components/SupplierAndSales/AddingS";
+import StockCards from "./components/StockCards/StockCards";
+import Reports from "./components/Reports/Reports";
 
 const App = () => {
   return (
@@ -36,6 +40,10 @@ const App = () => {
           path="/StockPurchaseReturnView"
           element={<StockPurchaseReturnView />}
         ></Route>
+        <Route path="/AddingCustomer" element={<AddingCus />}></Route>
+        <Route path="/AddingS" element={<AddingS />}></Route>
+        <Route path="/StockCards" element={<StockCards />}></Route>
+        <Route path="/Reports" element={<Reports />}></Route>
       </Routes>
     </HashRouter>
   );

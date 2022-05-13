@@ -1,0 +1,11 @@
+.En-heading {
+  padding: 0.5rem 2rem 0.5rem 2rem;
+  font-size: 1.85rem;
+  background-color: #fefbfb;
+  border-radius: 1rem 1rem 0 0;
+  cursor: pointer;
+}
+
+.input-lasts {
+  margin: 0 0 5rem 0;
+}
