@@ -107,6 +107,7 @@ textarea {
 .total .col {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
 }
 
 .final_total {
@@ -121,7 +122,7 @@ textarea {
 .buttons {
   display: flex;
   justify-content: space-between;
-  width: 30rem;
+  width: 40rem;
 }
 .buttons_view {
   display: flex;
@@ -248,4 +249,37 @@ input:focus {
   width: 2rem;
   margin: 0 1rem 0 0;
   filter: opacity(0.5);
+}
+
+.input-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Id-input {
+  max-width: 2.75rem;
+}
+
+.cus-input {
+  max-width: 7.5rem;
+}
+
+.input-total {
+  max-width: 5.15rem;
+}
+
+.imp::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+.amount {
+  padding-top: 1rem !important;
+}
+
+.bal_input {
+  margin: 0.25rem 0 0 0;
+  border-radius: 4px;
+  border: 2px solid rgb(174, 174, 175);
+  height: 2rem;
+  width: 8rem;
 }

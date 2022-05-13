@@ -1,0 +1,8 @@
+.min-heading {
+  width: 11rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  font-size: 1.85rem;
+  background-color: #fefbfb;
+  border-radius: 1rem 1rem 0 0;
+  cursor: pointer;
+}

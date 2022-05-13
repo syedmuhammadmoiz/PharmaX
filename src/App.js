@@ -10,6 +10,10 @@ import InvoiceReturn from "./components/Invoice/Return/InvoiceReturn/InvoiceRetu
 import InvoiceReturnView from "./components/Invoice/Return/InvoiceReturnView/InvoiceReturnView";
 import StockPurchaseReturn from "./components/Stock/Return/StockPurchaseReturn/StockPurchaseReturn";
 import StockPurchaseReturnView from "./components/Stock/Return/StockPurchaseReturnView/StockPurchaseReturnView";
+import AddingCus from "./components/AddingCustomer/AddingCus";
+import AddingS from "./components/SupplierAndSales/AddingS";
+import StockCards from "./components/StockCards/StockCards";
+import Reports from "./components/Reports/Reports";
 
 const App = () => {
   return (
@@ -18,7 +22,7 @@ const App = () => {
         <Route path="/" element={<Mainpage />}></Route>
         <Route path="/Invoice/:id" element={<InvoiceTable />}></Route>
         <Route path="/InvoiceView" element={<InvoiceView />}></Route>
-        <Route path="/StockPurchase" element={<StockPurchase />}></Route>
+        <Route path="/StockPurchase/:id" element={<StockPurchase />}></Route>
         <Route
           path="/StockPurchaseView"
           element={<StockPurchaseView />}
@@ -29,13 +33,17 @@ const App = () => {
           element={<InvoiceReturnView />}
         ></Route>
         <Route
-          path="/StockPurchaseReturn"
+          path="/StockPurchaseReturn/:id"
           element={<StockPurchaseReturn />}
         ></Route>
         <Route
           path="/StockPurchaseReturnView"
           element={<StockPurchaseReturnView />}
         ></Route>
+        <Route path="/AddingCustomer" element={<AddingCus />}></Route>
+        <Route path="/AddingS" element={<AddingS />}></Route>
+        <Route path="/StockCards" element={<StockCards />}></Route>
+        <Route path="/Reports" element={<Reports />}></Route>
       </Routes>
     </HashRouter>
   );

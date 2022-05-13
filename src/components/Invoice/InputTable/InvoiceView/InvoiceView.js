@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TableView from "./Table/TableView";
+import TableView from "../../../Common/TableView/TableView";
 import bill_png from "../../../../../assets/img/bill.png";
 import SideNavBar from "../../../Common/SideNavBar/SideNavBar";
 import TopNavBar from "../../../Common/TopNavBar/TopNavBar";
@@ -100,34 +100,42 @@ const InvoiceView = () => {
               <div className="flex_basis">
                 <div className="form_col lable_col">
                   <label> Customer: </label>
-                  <label> Disp Name: </label>
-                  <label> Address </label>
-                  <label className="last_lable"> Contact</label>
+                  <label> Address: </label>
+                  <label> Contact: </label>
+                  <label className="last_lable"> Salesman:</label>
                 </div>
                 <div className="form_col">
-                  <input
-                    type="text"
-                    name="name"
-                    onChange={(e) => {
-                      customerdropdown(e);
-                    }}
-                    value={customer}
-                    style={{ textAlign: "center" }}
-                    list="browsers"
-                  />
-                  <datalist id="browsers">
-                    {customers.map((item, index) => (
-                      <option
-                        onClick={() => {
-                          console.log("here");
-                        }}
-                        value={item.Name}
-                        key={index}
-                      >
-                        {item.Name}
-                      </option>
-                    ))}
-                  </datalist>
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="cus-input imp"
+                      type="text"
+                      name="name"
+                      onChange={(e) => {
+                        customerdropdown(e);
+                      }}
+                      value={customer}
+                      style={{ textAlign: "center" }}
+                      list="browsers"
+                    />
+                    <datalist id="browsers">
+                      {customers.map((item, index) => (
+                        <option
+                          onClick={() => {
+                            console.log("here");
+                          }}
+                          value={item.Name}
+                          key={index}
+                        >
+                          {item.Name}
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
                   <input
                     type="text"
                     name="name"
@@ -141,18 +149,25 @@ const InvoiceView = () => {
                     value={singleC.Address}
                     style={{ textAlign: "center" }}
                   />
-                  <input
-                    className="lastinput"
-                    type="text"
-                    name="name"
-                    value={singleC.Contact}
-                    style={{ textAlign: "center" }}
-                  />
+                  <div className="input-flex">
+                    <input
+                      type="text"
+                      className="Id-input"
+                      style={{ textAlign: "center" }}
+                    />
+                    <input
+                      className="lastinput cus-input"
+                      type="text"
+                      name="name"
+                      value={singleC.Contact}
+                      style={{ textAlign: "center" }}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex_basis flex_end">
                 <div className="form_col lable_col">
-                  <label>Salesman:</label>
+                  <label>Prev Bal:</label>
                   <label>Date:</label>
                   <label>Time:</label>
                   <label className="last_lable">Invoice number:</label>

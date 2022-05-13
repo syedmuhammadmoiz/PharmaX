@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-
 import "./tableView.css";
 
 const Emptytables = ({ length }) => {
@@ -59,8 +58,8 @@ const TableView = ({
       <table className="table_med">
         <thead>
           <tr onClick={clickToUnSelectTableRow}>
-            <th className="input--1 ">S.NO</th>
-            <th className="input-same-1">Code</th>
+            <th className="input--1">S.NO</th>
+            <th className="input-same-2">Code</th>
             <th className="input-same-3">Item Name</th>
             <th className="input-same-2">Batch</th>
             <th className="input-same-1">S.Price</th>

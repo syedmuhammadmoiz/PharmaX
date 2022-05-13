@@ -56,7 +56,8 @@ const Table = ({
     Total: "",
     Name: "",
     Batch: "",
-  }); //current data
+  });
+  //current data
   const [quantity, setquantity] = useState(null); //quantity of medicine
   const modalToggle = () => setShow(!show);
   const ref = useRef();
@@ -144,6 +145,7 @@ const Table = ({
 
   ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
+ 
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -225,6 +227,16 @@ const Table = ({
       setquantity(e.target.value);
     }
   };
+
+  //20 characters alphabet uppercase and digits random number generator  for invoice number
+  const randomString = () => {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    for (var i = 0; i < 20; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+  };
+
   //disc handler event to calulate discount and total
   const dischandler = (e) => {
     setdisc(e.target.value);
