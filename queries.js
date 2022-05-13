@@ -166,6 +166,7 @@ ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
 // Save Medicine into database
 
 global.share.ipcMain.on("saveintodatabase", (event, arg) => {
+  console.log
   dialog
     .showMessageBox({
       type: "question",
@@ -188,7 +189,7 @@ global.share.ipcMain.on("saveintodatabase", (event, arg) => {
           DECLARE @i NVARCHAR(MAX) = N'${JSON.stringify(arg.invoiceEdit)}';
           EXECUTE Generate_invoice @files=@f, @insert = @i,@total = ${
             arg.totalMedicine
-          }, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo};
+          }, @RNDT = '${arg.RandomNo}', @Inv = ${arg.InvNo}, @CID = ${arg.CID},@SMID = ${arg.SMID}, @Tol=${arg.Total}, @debit=${arg.Dedit} ;
           `
               )
               .then(function (recordset) {
@@ -574,4 +575,32 @@ global.share.ipcMain.on("loadinvoicebyno", (event, arg) => {
     .catch(function (err) {
       console.log(err);
     });
+});
+
+
+//loadinvoiceby number loadinvoicebyno
+global.share.ipcMain.on("Balance", (event, arg) => {
+  console.log(arg)
+  var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`Update_invoice_balance @total = ${arg.total} , @debit = ${arg.debit} , @CID = ${arg.CID} , @Inv = ${arg.Inv}`)
+        .then(function (recordset) {
+          console.log(recordset.recordset)
+         
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+    
 });

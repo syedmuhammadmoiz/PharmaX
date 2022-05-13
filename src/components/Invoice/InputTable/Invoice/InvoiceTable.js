@@ -19,6 +19,8 @@ const InvoiceTable = () => {
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
+  const [amount,setamount] = useState('')
+  const [bal,setbal] = useState('')
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -91,7 +93,7 @@ const InvoiceTable = () => {
     if(arg.length > 0){
     setcustomers(arg[0])
     }
-  });
+  })
 
   const customerdropdown = (e) => {
     setcustomers({
@@ -99,33 +101,55 @@ const InvoiceTable = () => {
       Address: "",
       Contact:"",
       Balance:""
-    });
-    ipcRenderer.send("customer", e.target.value);
-  };
+    })
+    ipcRenderer.send("customer", e.target.value)
+  }
   //save to database
   const savetodatabase = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (customers.length === 0) {
-      ipcRenderer.send("error", "Please select customer");
+      ipcRenderer.send("error", "Please select customer")
     } else if (saveinvoice.length === 0) {
-      ipcRenderer.send("error", "Please select the Medicine");
+      ipcRenderer.send("error", "Please select the Medicine")
     } else {
       let data = {
+        CID: customers.CID,
+        SMID: salesman.SMID,
         InvNo: saveinvoice.invNo,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
+        Total:netTotal,
+        Dedit:0,
         RandomNo: saveinvoice.RandomNo,
         totalMedicine:
           saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
-      };
-      ipcRenderer.send("saveintodatabase", data);
-      setDisables(true);
+      }
+      ipcRenderer.send("saveintodatabase", data)
+      setDisables(true)
     }
   };
 
   ipcRenderer.on("setfalse", (event) => {
-    setDisables(false);
+    setDisables(false)
   });
+  const balacecalculation = (e) => {
+   if (e.key.toLowerCase() === "enter" )  {
+     if(saveinvoice.invoiceEdit.length > 0 || saveinvoice.newInvoice.length >0){
+     const bal = netTotal - amount
+     const m = customers.Balance + bal
+     setbal(m)
+     const data = {
+       total:netTotal,
+       debit: parseInt(amount),
+       CID:customers.CID,
+       Inv:saveinvoice.invNo,
+     }
+     ipcRenderer.send('Balance', data)
+    }else{
+       ipcRenderer.send("error", "Please add the medicine into Table")
+   }
+   }
+  }
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
@@ -238,7 +262,7 @@ const InvoiceTable = () => {
                       type="text"
                       className="input-total"
                       name="name"
-                      
+                      value={bal}
                       style={{ textAlign: "center" }}
                     />
                   </div>
@@ -338,6 +362,9 @@ const InvoiceTable = () => {
                     <input
                       type="text"
                       className="bal_input"
+                      value={amount}
+                      onChange={(e) => {setamount(e.target.value)}}
+                      onKeyPress={(e) => {balacecalculation(e)}}
                       style={{ textAlign: "center" }}
                     />
                   </div>
