@@ -9,10 +9,7 @@ import { ipcRenderer } from "electron";
 import { useNavigate } from "react-router-dom";
 
 const InvoiceView = () => {
-  const [customer, setCustomer] = useState("General");
-  const [singleC, setsingleC] = useState({});
   const [customers, setcustomers] = useState([]);
-  const [salesman, setSalesman] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [tableSelect, setTableSelect] = useState();
@@ -20,19 +17,24 @@ const InvoiceView = () => {
   const [invoiceno, setinvoiceno] = useState("");
   const [invoicev, setinvoicev] = useState([]);
   const [total, settotal] = useState(0.0);
-
   const nevigate = useNavigate();
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
     }
   };
-
-  ipcRenderer.on("salesman", (event, arg) => {
-    setSalesman(arg[0].Name);
-  });
   ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
+      console.log(arg);
+      setcustomers({
+        SName: arg[0].SName,
+        CName: arg[0].CName,
+        CID: arg[0].CID,
+        Address: arg[0].Address,
+        Contact: arg[0].Contact,
+        SMID: arg[0].SMID,
+        Balance: arg[0].Balance,
+      });
       setinvoicev(arg);
       let InvDate = new Date(arg[0].Dat);
       setDate(InvDate.toLocaleDateString());
@@ -41,21 +43,27 @@ const InvoiceView = () => {
     } else {
     }
   });
-  ipcRenderer.on("customer", (event, arg) => {
-    setsingleC(arg[0]);
-  });
 
   const invoicekeydown = (e) => {
     if (e.key === "Enter") {
       if (invoiceno.length === 0) {
         ipcRenderer.send("error", "Please Enter the Invoice No");
       } else {
-        ipcRenderer.send("searchinvno", invoiceno);
+        ipcRenderer.send("loadinvoicebyno", invoiceno);
       }
     }
   };
   //clear current data from table
   const cleardata = () => {
+    setcustomers({
+      SName: "",
+      CName: "",
+      CID: "",
+      Address: "",
+      Contact: "",
+      SMID: "",
+      Balance: "",
+    });
     setinvoicev([]);
     setinvoiceno("");
     setDate("");
@@ -75,9 +83,8 @@ const InvoiceView = () => {
   const sideBarToggle = () => setSideBar(!sideBar);
 
   useEffect(() => {
-    ipcRenderer.send("salesman");
-    ipcRenderer.send("customer", customer);
-  }, []);
+    console.log(customers);
+  }, [customers]);
 
   return (
     <>
@@ -109,57 +116,41 @@ const InvoiceView = () => {
                     <input
                       type="text"
                       className="Id-input"
+                      value={customers.CID}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="cus-input imp"
                       type="text"
                       name="name"
-                      onChange={(e) => {
-                        customerdropdown(e);
-                      }}
-                      value={customer}
+                      value={customers.CName}
                       style={{ textAlign: "center" }}
-                      list="browsers"
                     />
-                    <datalist id="browsers">
-                      {customers.map((item, index) => (
-                        <option
-                          onClick={() => {
-                            console.log("here");
-                          }}
-                          value={item.Name}
-                          key={index}
-                        >
-                          {item.Name}
-                        </option>
-                      ))}
-                    </datalist>
                   </div>
                   <input
                     type="text"
                     name="name"
-                    value={customer}
+                    value={customers.Address}
                     style={{ textAlign: "center" }}
-                    onChange={(e) => setCustomer(e.target.value)}
                   />
                   <input
                     type="text"
                     name="name"
-                    value={singleC.Address}
+                    value={customers.Contact}
                     style={{ textAlign: "center" }}
                   />
                   <div className="input-flex">
                     <input
                       type="text"
                       className="Id-input"
+                      value={customers.SMID}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="lastinput cus-input"
                       type="text"
                       name="name"
-                      value={singleC.Contact}
+                      value={customers.SName}
                       style={{ textAlign: "center" }}
                     />
                   </div>
@@ -176,7 +167,7 @@ const InvoiceView = () => {
                   <input
                     type="text"
                     name="name"
-                    value={salesman}
+                    value={customers.Balance}
                     style={{ textAlign: "center" }}
                   />
                   <input

@@ -135,9 +135,9 @@ const Table = ({
 
   const focusNextRef = useFocusNext();
 
-   ipcRenderer.on("searchcrdno", (event, arg) => {
+  ipcRenderer.on("searchcrdno", (event, arg) => {
     if (arg.length > 0) {
-      console.log(arg)
+      console.log(arg);
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -184,7 +184,7 @@ const Table = ({
       Cost: Math.floor(item.Cost),
       TP: Math.floor(item.TP),
       Name: item.Name,
-      Crd:invoice,
+      Crd: invoice,
       Price: Math.floor(item.Price),
       Disc1: item.Disc1,
       Stax: item.Stax,
@@ -522,11 +522,15 @@ const Table = ({
                   <td className="center">{item.Code}</td>
                   <td>{item.Name}</td>
                   <td className="center">{item.Batch}</td>
-                  <td className="center">{parseFloat(item.Disc1.toFixed(2))}</td>
+                  <td className="center">
+                    {parseFloat(item.Disc1.toFixed(2))}
+                  </td>
                   <td className="center">{item.TP}</td>
-                  <td className="center">{parseFloat(item.Bonus.toFixed(2))}</td>
+                  <td className="center">
+                    {parseFloat(item.Bonus.toFixed(2))}
+                  </td>
                   <td className="center">{item.Quantity}</td>
-                  <td className="center">{ parseFloat(item.STP.toFixed(2))}</td>
+                  <td className="center">{parseFloat(item.STP.toFixed(2))}</td>
                   <td className="center">{item.Disc1}</td>
                   <td className="center">
                     {parseFloat(item.Total.toFixed(2))}

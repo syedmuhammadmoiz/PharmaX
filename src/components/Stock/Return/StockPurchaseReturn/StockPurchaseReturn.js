@@ -11,12 +11,12 @@ import { useNavigate } from "react-router-dom";
 
 const StockPurchaseReturn = () => {
   const [customer, setCustomer] = useState("");
-  const [invoice, setInvoice] = useState("")
+  const [invoice, setInvoice] = useState("");
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
-  const [returntype, setReturntype] = useState({})
+  const [returntype, setReturntype] = useState({});
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -45,7 +45,7 @@ const StockPurchaseReturn = () => {
   const clearinvoice = useRef();
   const clearcurrent = useRef();
 
-   ipcRenderer.on("prno", (event, arg) => {
+  ipcRenderer.on("prno", (event, arg) => {
     setInvoice(arg[0].CRD + 1);
     setsaveinvoice((saveinvoice) => ({
       ...saveinvoice,
@@ -55,7 +55,7 @@ const StockPurchaseReturn = () => {
   });
 
   ipcRenderer.on("typereturn", (event, arg) => {
-    setReturntype(arg[0])
+    setReturntype(arg[0]);
   });
   const randomString = () => {
     var text = "";
@@ -65,7 +65,6 @@ const StockPurchaseReturn = () => {
     }
     return text;
   };
-
 
   const customerdropdown = (e) => {
     setCustomer(e.target.value);
@@ -81,7 +80,7 @@ const StockPurchaseReturn = () => {
     } else {
       let data = {
         card: saveinvoice.invNo,
-        SID:customer.SID, 
+        SID: customer.SID,
         type: returntype.TypID,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
@@ -91,13 +90,13 @@ const StockPurchaseReturn = () => {
       setDisables(true);
     }
   };
-   ipcRenderer.on( "searchcrdno", (event, arg) => {
+  ipcRenderer.on("searchcrdno", (event, arg) => {
     setCustomer({
-      Name:arg[0].SuppName,
-      Address:arg[0].Address,
-      SID:arg[0].SID,
-    })
-  })
+      Name: arg[0].SuppName,
+      Address: arg[0].Address,
+      SID: arg[0].SID,
+    });
+  });
 
   ipcRenderer.on("setfalse", (event) => {
     setDisables(false);
@@ -111,8 +110,8 @@ const StockPurchaseReturn = () => {
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("typereturn")
-  
+    ipcRenderer.send("typereturn");
+
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("searchcrdno", id);
       setsaveinvoice((saveinvoice) => ({
@@ -122,7 +121,7 @@ const StockPurchaseReturn = () => {
       setInvoice(id);
       setnotelete(true);
     } else {
-       ipcRenderer.send("prno");
+      ipcRenderer.send("prno");
     }
   }, []);
 
@@ -239,7 +238,6 @@ const StockPurchaseReturn = () => {
                 <button
                   className="button_main"
                   onClick={(e) => {
-                 
                     navigate(0);
                   }}
                 >

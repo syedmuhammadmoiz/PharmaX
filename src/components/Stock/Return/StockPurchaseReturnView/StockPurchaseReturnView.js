@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 
 const StockPurchaseReturnView = () => {
   const [customer, setCustomer] = useState({});
-  const [singleC, setsingleC] = useState({})
-  const [returntype, setReturntype] = useState({})
+  const [singleC, setsingleC] = useState({});
+  const [returntype, setReturntype] = useState({});
   const [date, setDate] = useState("");
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
@@ -26,25 +26,24 @@ const StockPurchaseReturnView = () => {
     }
   };
 
-
   ipcRenderer.on("searchcrdno", (event, arg) => {
     if (arg.length > 0) {
       setinvoicev(arg);
       setCustomer({
         Name: arg[0].SuppName,
         SID: arg[0].SID,
-        Address:arg[0].Address
-      })
+        Address: arg[0].Address,
+      });
       let InvDate = new Date(arg[0].Dat);
       setDate(InvDate.toLocaleDateString());
       settotal(arg.reduce((total, item) => total + item.STP * item.Qty, 0));
     } else {
     }
-  })
+  });
 
   ipcRenderer.on("typereturn", (event, arg) => {
-    console.log(arg)
-    setReturntype(arg[0])
+    console.log(arg);
+    setReturntype(arg[0]);
   });
 
   const invoicekeydown = (e) => {
@@ -61,7 +60,6 @@ const StockPurchaseReturnView = () => {
     setinvoicev([]);
     setinvoiceno("");
     setDate("");
-
   };
   //save to database
   const savetodatabase = (e) => {
@@ -77,7 +75,7 @@ const StockPurchaseReturnView = () => {
   const sideBarToggle = () => setSideBar(!sideBar);
 
   useEffect(() => {
-    ipcRenderer.send("typereturn")
+    ipcRenderer.send("typereturn");
   }, []);
 
   return (
@@ -119,7 +117,6 @@ const StockPurchaseReturnView = () => {
                     name="name"
                     value={customer.SID}
                     style={{ textAlign: "center" }}
-    
                   />
                   <input
                     className="lastinput"

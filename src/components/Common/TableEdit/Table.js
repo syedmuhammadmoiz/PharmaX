@@ -36,12 +36,14 @@ const Table = ({
   setsaveinvoice,
   Invoice,
   saveinvoice,
+  dis
 }) => {
   const [show, setShow] = useState(false); //show model
   const [search, setsearch] = useState(""); //search input
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
+  const [disa,setdisa] = useState(false)
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -62,6 +64,7 @@ const Table = ({
   const modalToggle = () => setShow(!show);
   const ref = useRef();
   const refback = useRef();
+  
 
   const reset = {
     SNO: "",
@@ -145,7 +148,6 @@ const Table = ({
 
   ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
- 
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
@@ -301,6 +303,9 @@ const Table = ({
   };
 
   useEffect(() => {
+    if(dis){
+    setdisa(dis)
+    }
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
         return item.Code != currentdata.Code;
@@ -445,6 +450,7 @@ const Table = ({
                 id="Quantity"
                 type="number"
                 min={0}
+                 disabled = {disa}
                 value={quantity == null ? "" : quantity}
                 onChange={(e) => {
                   addquantity(e);
@@ -472,6 +478,7 @@ const Table = ({
                 name="name"
                 ref={focusNextRef}
                 id="Total amount"
+                disabled = {disa}
                 value={quantity != null ? currentdata.Total * quantity : ""}
                 onKeyDown={putdataintoinvoice}
               />

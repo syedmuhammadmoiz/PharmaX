@@ -1,4 +1,4 @@
-const { dialog } = require("electron");
+const { dialog, ipcRenderer } = require("electron");
 const sql = require("mssql");
 const sqlConfig = {
   user: "sa",
@@ -12,7 +12,6 @@ const sqlConfig = {
     trustServerCertificate: true,
   },
 };
-
 // Search medicine in database
 
 global.share.ipcMain.on("search", (event, arg) => {
@@ -26,6 +25,7 @@ global.share.ipcMain.on("search", (event, arg) => {
           `select * from Stock where Name like '${arg}%' or Code like '${arg}'`
         )
         .then(function (recordset) {
+          console.log(recordset.recordset)
           global.share.mainWindow.webContents.send(
             "search",
             recordset.recordset
@@ -166,6 +166,7 @@ ON InvM.InvNo =  ${arg} and Invoice.Invno = ${arg};`
 // Save Medicine into database
 
 global.share.ipcMain.on("saveintodatabase", (event, arg) => {
+  console.log(arg)
   console.log
   dialog
     .showMessageBox({
@@ -545,19 +546,21 @@ global.share.ipcMain.on("loadinvoice", (event, arg) => {
 
 //loadinvoiceby number loadinvoicebyno
 global.share.ipcMain.on("loadinvoicebyno", (event, arg) => {
+  console.log('')
+  console.log(arg)
   var conn = new sql.ConnectionPool(sqlConfig);
   conn
     .connect()
     .then(function () {
       var request = new sql.Request(conn);
       request
-        .query(`select Customer.CID,Customer.Name as CName, Customer.Address, Customer.Contact,InvM.SMID, Salesman.Name as SName,InvM.InvNo, InvM.Dat,InvM.InvTime,Invoice.SNO, Invoice.Code,Invoice.Name,Invoice.Batch, Invoice.STP, Invoice.Bon,Invoice.Stax, Invoice.Qty, Invoice.Disc from InvM
+        .query(`select Customer.CID,Customer.Name as CName, Customer.Address, Customer.Contact,InvM.SMID, Customer.Balance ,Salesman.Name as SName,InvM.InvNo, InvM.Dat,InvM.InvTime,Invoice.SNO, Invoice.Code,Invoice.Name,Invoice.Batch, Invoice.STP, Invoice.Bon,Invoice.Stax, Invoice.Qty, Invoice.Disc from InvM
                 inner join Invoice
                 on InvM.InvNo = ${arg} and Invoice.Invno = ${arg}
                 inner join Salesman
                 on InvM.SMID = Salesman.SMID 
                 inner join Customer
-                on InvM.CID = InvM.CID`)
+                on Customer.CID = InvM.CID`)
         .then(function (recordset) {
           console.log(recordset.recordset)
           global.share.mainWindow.webContents.send(
@@ -589,7 +592,7 @@ global.share.ipcMain.on("Balance", (event, arg) => {
       request
         .query(`Update_invoice_balance @total = ${arg.total} , @debit = ${arg.debit} , @CID = ${arg.CID} , @Inv = ${arg.Inv}`)
         .then(function (recordset) {
-          console.log(recordset.recordset)
+         
          
           conn.close();
         })
@@ -604,3 +607,109 @@ global.share.ipcMain.on("Balance", (event, arg) => {
     });
     
 });
+
+//loadinvoiceby number loadinvoicebyno
+global.share.ipcMain.on("onlinedatabase", (event, arg) => {
+var conn = new sql.ConnectionPool(sqlConfig);
+  conn
+    .connect()
+    .then(function () {
+      var request = new sql.Request(conn);
+      request
+        .query(`select Qty,Code from Stock`)
+        .then(function (recordset) {
+          send(recordset.recordset)
+          conn.close();
+        })
+        .catch(function (err) {
+          console.log(err);
+          conn.close();
+        });
+      console.log("connection is created");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+
+
+
+global.share.ipcMain.on("genericname", (event, arg) => {
+  console.log(arg)
+// var conn = new sql.ConnectionPool(sqlConfig);
+//   conn
+//     .connect()
+//     .then(function () {
+//       var request = new sql.Request(conn);
+//       request
+//         .query(`select Qty,Code from Stock`)
+//         .then(function (recordset) {
+//           send(recordset.recordset)
+//           conn.close();
+//         })
+//         .catch(function (err) {
+//           console.log(err);
+//           conn.close();
+//         });
+//       console.log("connection is created");
+//     })
+//     .catch(function (err) {
+//       console.log(err);
+//     });
+});
+
+
+global.share.ipcMain.on("company", (event, arg) => {
+  console.log(arg)
+// var conn = new sql.ConnectionPool(sqlConfig);
+//   conn
+//     .connect()
+//     .then(function () {
+//       var request = new sql.Request(conn);
+//       request
+//         .query(`select Qty,Code from Stock`)
+//         .then(function (recordset) {
+//           send(recordset.recordset)
+//           conn.close();
+//         })
+//         .catch(function (err) {
+//           console.log(err);
+//           conn.close();
+//         });
+//       console.log("connection is created");
+//     })
+//     .catch(function (err) {
+//       console.log(err);
+//     });
+});
+
+
+global.share.ipcMain.on("company", (event, arg) => {
+  console.log(arg)
+// var conn = new sql.ConnectionPool(sqlConfig);
+//   conn
+//     .connect()
+//     .then(function () {
+//       var request = new sql.Request(conn);
+//       request
+//         .query(`select Qty,Code from Stock`)
+//         .then(function (recordset) {
+//           send(recordset.recordset)
+//           conn.close();
+//         })
+//         .catch(function (err) {
+//           console.log(err);
+//           conn.close();
+//         });
+//       console.log("connection is created");
+//     })
+//     .catch(function (err) {
+//       console.log(err);
+//     });
+});
+
+
+
+
+

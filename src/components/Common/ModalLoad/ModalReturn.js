@@ -11,7 +11,7 @@ const ModalReturn = ({
   data,
   loadinvoice,
   setdata,
-  setloadinvoicen
+  setloadinvoicen,
 }) => {
   const [search, setsearch] = useState("");
   const [modalRow, setModalRow] = useState(0);
@@ -81,9 +81,7 @@ const ModalReturn = ({
   const onChangeAttribute = (value) => {
     setloadinvoicen(value);
     setCheck(value);
-  
   };
-
 
   return (
     <div className="modal_cover" onClick={closeModalIfClickedOutside}>
@@ -103,26 +101,37 @@ const ModalReturn = ({
           </div>
           <div className="table-scroll scroll-height">
             <div className="checkbox-modal">
-              {(loadinvoice.length >0) ? loadinvoice.map((item) => (
-                <label for={item.InvNo}>
-                  <input
-                    type="checkbox"
-                    id={item.InvNo}
-                    name={item.InvNo}
-                    value={item.InvNo}
-                    checked={check === item.InvNo}
-                    className="return_modal_input"
-                    onChange={(e) => onChangeAttribute(item.InvNo)}
-                  />
-                  {item.InvNo}
-                  <span className="space">{item.Name}</span>{" "}
-                  <span className="space">{moment(item.Dat).format('YYYY MM DD')}</span>
-                </label>
-              )):""}
+              {loadinvoice.length > 0
+                ? loadinvoice.map((item) => (
+                    <label for={item.InvNo}>
+                      <input
+                        type="checkbox"
+                        id={item.InvNo}
+                        name={item.InvNo}
+                        value={item.InvNo}
+                        checked={check === item.InvNo}
+                        className="return_modal_input"
+                        onChange={(e) => onChangeAttribute(item.InvNo)}
+                      />
+                      {item.InvNo}
+                      <span className="space">{item.Name}</span>{" "}
+                      <span className="space">
+                        {moment(item.Dat).format("YYYY MM DD")}
+                      </span>
+                    </label>
+                  ))
+                : ""}
             </div>
           </div>
           <div className="return_modal_buttons">
-            <button className="return_button" onClick={()=>{  setShow(false)}}>OK</button>
+            <button
+              className="return_button"
+              onClick={() => {
+                setShow(false);
+              }}
+            >
+              OK
+            </button>
             <button className="return_button" onClick={modalToggle}>
               Cancel
             </button>

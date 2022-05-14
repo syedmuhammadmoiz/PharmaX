@@ -19,8 +19,8 @@ const InvoiceTable = () => {
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
   const [disables, setDisables] = useState(false);
-  const [amount,setamount] = useState('')
-  const [bal,setbal] = useState('')
+  const [amount, setamount] = useState("");
+  const [bal, setbal] = useState("");
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -51,28 +51,50 @@ const InvoiceTable = () => {
     }
   };
 
+  ipcRenderer.on("searchinvno", (event, arg) => {
+    if (arg.length > 0) {
+      console.log(arg);
+      setSalesman({
+        SMID:arg[0].SMID
+      })
+      setcustomers({
+        SName: arg[0].SName,
+        CName: arg[0].CName,
+        CID: arg[0].CID,
+        Address: arg[0].Address,
+        Contact: arg[0].Contact,
+        SMID: arg[0].SMID,
+        Balance: arg[0].Balance,
+      });
+    }
+  });
+
   const clearinvoice = useRef();
   const clearcurrent = useRef();
+  ipcRenderer.on("onlinedatabase", (event, arg) => {
+    console.log(arg);
+  });
 
   ipcRenderer.on("salesman", (event, arg) => {
-    if(arg.length > 0){
-      console.log(arg)
-    setSalesman({
-      Name:arg[0].Name,
-      SMID:arg[0].SMID
-    })}
+    if (arg.length > 0) {
+      console.log(arg);
+      setSalesman({
+        Name: arg[0].Name,
+        SMID: arg[0].SMID,
+      });
+    }
   });
-  const selectsalesman =(e)=>{
-    console.log(e.target.value)
+  const selectsalesman = (e) => {
+    console.log(e.target.value);
     setSalesman({
-      SMID:e.target.value,
-      Name:"",
-    })
-    if(e.target.value != ""){
-    ipcRenderer.send("salesman",e.target.value)
-  }
-  }
-  
+      SMID: e.target.value,
+      Name: "",
+    });
+    if (e.target.value != "") {
+      ipcRenderer.send("salesman", e.target.value);
+    }
+  };
+
   const randomString = () => {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -89,28 +111,29 @@ const InvoiceTable = () => {
       RandomNo: randomString(),
     }));
   });
-  ipcRenderer.on("customer", (event, arg) => {
-    if(arg.length > 0){
-    setcustomers(arg[0])
-    }
-  })
 
   const customerdropdown = (e) => {
     setcustomers({
       Name: e.target.value,
       Address: "",
-      Contact:"",
-      Balance:""
-    })
-    ipcRenderer.send("customer", e.target.value)
-  }
+      Contact: "",
+      Balance: "",
+    });
+    ipcRenderer.send("customer", e.target.value);
+  };
+  ipcRenderer.on("customer", (event, arg) => {
+    console.log(arg);
+    if (arg.length > 0) {
+      setcustomers(arg[0]);
+    }
+  });
   //save to database
   const savetodatabase = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (customers.length === 0) {
-      ipcRenderer.send("error", "Please select customer")
+      ipcRenderer.send("error", "Please select customer");
     } else if (saveinvoice.length === 0) {
-      ipcRenderer.send("error", "Please select the Medicine")
+      ipcRenderer.send("error", "Please select the Medicine");
     } else {
       let data = {
         CID: customers.CID,
@@ -118,49 +141,55 @@ const InvoiceTable = () => {
         InvNo: saveinvoice.invNo,
         invoiceEdit: saveinvoice.invoiceEdit,
         newInvoice: saveinvoice.newInvoice,
-        Total:netTotal,
-        Dedit:0,
+        Total: netTotal,
+        Dedit: 0,
         RandomNo: saveinvoice.RandomNo,
         totalMedicine:
           saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
       }
-      ipcRenderer.send("saveintodatabase", data)
-      setDisables(true)
+      ipcRenderer.send("saveintodatabase", data);
+      setDisables(true);
     }
   };
 
   ipcRenderer.on("setfalse", (event) => {
-    setDisables(false)
+    setDisables(false);
   });
   const balacecalculation = (e) => {
-   if (e.key.toLowerCase() === "enter" )  {
-     if(saveinvoice.invoiceEdit.length > 0 || saveinvoice.newInvoice.length >0){
-     const bal = netTotal - amount
-     const m = customers.Balance + bal
-     setbal(m)
-     const data = {
-       total:netTotal,
-       debit: parseInt(amount),
-       CID:customers.CID,
-       Inv:saveinvoice.invNo,
-     }
-     ipcRenderer.send('Balance', data)
-    }else{
-       ipcRenderer.send("error", "Please add the medicine into Table")
-   }
-   }
-  }
+    if (e.key.toLowerCase() === "enter") {
+      if (
+        saveinvoice.invoiceEdit.length > 0 ||
+        saveinvoice.newInvoice.length > 0
+      ) {
+        const bal = netTotal - amount;
+        const m = customers.Balance + bal;
+        setbal(m);
+        const data = {
+          total: netTotal,
+          debit: parseInt(amount),
+          CID: customers.CID,
+          Inv: saveinvoice.invNo,
+        };
+        ipcRenderer.send("Balance", data);
+      } else {
+        ipcRenderer.send("error", "Please add the medicine into Table");
+      }
+    }
+  };
   function callfunction() {}
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
+    ipcRenderer.send("onlinedatabase");
+
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
-      ipcRenderer.send("searchinvno", id);
+      ipcRenderer.send("loadinvoicebyno", id);
       setsaveinvoice((saveinvoice) => ({
         ...saveinvoice,
         invNo: id,
       }));
       setInvoice(id);
+
       setnotelete(true);
     } else {
       ipcRenderer.send("invno");
@@ -207,7 +236,7 @@ const InvoiceTable = () => {
                       className="cus-input imp"
                       type="text"
                       name="name"
-                      value={customers.Name}
+                      value={customers.Name || customers.SName}
                       style={{ textAlign: "center" }}
                     />
                   </div>
@@ -227,17 +256,18 @@ const InvoiceTable = () => {
                     <input
                       type="text"
                       className="Id-input"
-                      value={salesman.SMID}
-                      onChange={(e) => {selectsalesman(e)}}
+                      value={salesman.SMID || customers.SMID}
+                      onChange={(e) => {
+                        selectsalesman(e);
+                      }}
                       style={{ textAlign: "center" }}
                     />
                     <input
                       className="lastinput cus-input"
                       type="text"
                       name="name"
-                      value={salesman.Name}
+                      value={salesman.Name || customers.SName}
                       style={{ textAlign: "center" }}
-                     
                     />
                   </div>
                 </div>
@@ -363,8 +393,12 @@ const InvoiceTable = () => {
                       type="text"
                       className="bal_input"
                       value={amount}
-                      onChange={(e) => {setamount(e.target.value)}}
-                      onKeyPress={(e) => {balacecalculation(e)}}
+                      onChange={(e) => {
+                        setamount(e.target.value);
+                      }}
+                      onKeyPress={(e) => {
+                        balacecalculation(e);
+                      }}
                       style={{ textAlign: "center" }}
                     />
                   </div>

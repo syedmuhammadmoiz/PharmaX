@@ -28,7 +28,7 @@ const StockPurchaseView = () => {
   };
 
   ipcRenderer.on("searchstockno", (event, arg) => {
-    console.log(arg)
+    console.log(arg);
     if (arg.length > 0) {
       setinvoicev(arg);
       let InvDate = new Date(arg[0].Dat);

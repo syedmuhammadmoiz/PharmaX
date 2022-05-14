@@ -37,7 +37,6 @@ const StockPurchase = () => {
     "/" +
     currentdate.getFullYear();
 
-
   const clickToUnSelectTableRow = (e) => {
     if (e.target.element !== "select_table") {
       setTableSelect(null);
@@ -47,18 +46,15 @@ const StockPurchase = () => {
   const clearinvoice = useRef();
   const clearcurrent = useRef();
 
-  ipcRenderer.on( "searchstockno", (event, arg) => {
-  
+  ipcRenderer.on("searchstockno", (event, arg) => {
     setCustomer({
-      Name:arg[0].Supplier_Name,
-      Address:arg[0].Address,
-      SID:arg[0].SID,
-    })
-    setbuiltyno(arg[0].Builty)
-    settransport(arg[0].Transport)
-
-     
-  })
+      Name: arg[0].Supplier_Name,
+      Address: arg[0].Address,
+      SID: arg[0].SID,
+    });
+    setbuiltyno(arg[0].Builty);
+    settransport(arg[0].Transport);
+  });
 
   const randomString = () => {
     var text = "";
@@ -102,9 +98,9 @@ const StockPurchase = () => {
       } else if (transport.length <= 0) {
         ipcRenderer.send("error", "Please Enter the Transport");
       } else {
-        const builtyn = builtyno.toString()
+        const builtyn = builtyno.toString();
         let data = {
-          builtyno:builtyn,
+          builtyno: builtyn,
           customer,
           transport,
           CRD: parseInt(saveinvoice.invNo),

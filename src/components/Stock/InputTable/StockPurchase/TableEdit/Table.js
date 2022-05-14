@@ -148,9 +148,8 @@ const Table = ({
   });
 
   ipcRenderer.on("searchstockno", (event, arg) => {
-
     if (arg.length > 0) {
-      console.log(arg)
+      console.log(arg);
       const data = arg.map((element) => ({
         Batch: element.Batch,
         Bonus: -1,
