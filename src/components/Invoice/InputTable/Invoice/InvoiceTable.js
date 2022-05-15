@@ -9,6 +9,7 @@ import "./InvoiceTable.css";
 import { ipcRenderer } from "electron";
 import { useNavigate } from "react-router-dom";
 
+
 const InvoiceTable = () => {
   const [customers, setcustomers] = useState({});
   const [salesman, setSalesman] = useState({});
@@ -55,8 +56,8 @@ const InvoiceTable = () => {
     if (arg.length > 0) {
       console.log(arg);
       setSalesman({
-        SMID:arg[0].SMID
-      })
+        SMID: arg[0].SMID,
+      });
       setcustomers({
         SName: arg[0].SName,
         CName: arg[0].CName,
@@ -146,7 +147,7 @@ const InvoiceTable = () => {
         RandomNo: saveinvoice.RandomNo,
         totalMedicine:
           saveinvoice.invoiceEdit.length + saveinvoice.newInvoice.length,
-      }
+      };
       ipcRenderer.send("saveintodatabase", data);
       setDisables(true);
     }
@@ -180,7 +181,7 @@ const InvoiceTable = () => {
 
   const sideBarToggle = () => setSideBar(!sideBar);
   useEffect(() => {
-    ipcRenderer.send("onlinedatabase");
+    ipcRenderer.send("test");
 
     if (id !== undefined && id !== null && id !== "" && id !== "0") {
       ipcRenderer.send("loadinvoicebyno", id);
@@ -207,7 +208,7 @@ const InvoiceTable = () => {
               <img src={invoice_png} alt="invoice" className="office_img" />
               <div className="Invoice-heading">New Invoice</div>
               <div className="buttons_Invoice">
-                <button className="button_border">Print</button>
+                <button className="button_border" onClick={(e)=>{print()}} >Print</button>
                 <div className="vertical margin_side"></div>
                 <button className=" button_border margin_side">Download</button>
               </div>

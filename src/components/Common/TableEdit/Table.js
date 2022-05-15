@@ -36,14 +36,14 @@ const Table = ({
   setsaveinvoice,
   Invoice,
   saveinvoice,
-  dis
+  dis,
 }) => {
   const [show, setShow] = useState(false); //show model
   const [search, setsearch] = useState(""); //search input
   var [data, setdata] = useState([]); //data from database
   var [invoice, setinvoice] = useState([]); //invoice data
   const [disc, setdisc] = useState(""); //discount
-  const [disa,setdisa] = useState(false)
+  const [disa, setdisa] = useState(false);
   const [currentdata, setcurrentdata] = useState({
     SNO: "",
     Bonus: "",
@@ -64,7 +64,6 @@ const Table = ({
   const modalToggle = () => setShow(!show);
   const ref = useRef();
   const refback = useRef();
-  
 
   const reset = {
     SNO: "",
@@ -303,8 +302,8 @@ const Table = ({
   };
 
   useEffect(() => {
-    if(dis){
-    setdisa(dis)
+    if (dis) {
+      setdisa(dis);
     }
     if (currentdata.Quantity !== "" && currentdata.selected != true) {
       const filter = invoice.filter((item) => {
@@ -450,7 +449,7 @@ const Table = ({
                 id="Quantity"
                 type="number"
                 min={0}
-                 disabled = {disa}
+                disabled={disa}
                 value={quantity == null ? "" : quantity}
                 onChange={(e) => {
                   addquantity(e);
@@ -478,7 +477,7 @@ const Table = ({
                 name="name"
                 ref={focusNextRef}
                 id="Total amount"
-                disabled = {disa}
+                disabled={disa}
                 value={quantity != null ? currentdata.Total * quantity : ""}
                 onKeyDown={putdataintoinvoice}
               />

@@ -17,7 +17,7 @@ const InvoiceReturn = () => {
   const [netTotal, setNetTotal] = useState(0.0);
   const [tableSelect, setTableSelect] = useState();
   const [sideBar, setSideBar] = useState(true);
-  const [dis,setdis] = useState(true)
+  const [dis, setdis] = useState(true);
   const [saveinvoice, setsaveinvoice] = useState({
     invNo: "",
     invoiceEdit: [],
@@ -61,12 +61,12 @@ const InvoiceReturn = () => {
   };
   const clearinvoice = useRef();
   const clearcurrent = useRef();
-   ipcRenderer.on("searchinvno", (event, arg) => {
+  ipcRenderer.on("searchinvno", (event, arg) => {
     if (arg.length > 0) {
       console.log(arg);
       setSalesman({
-        SMID:arg[0].SMID
-      })
+        SMID: arg[0].SMID,
+      });
       setcustomers({
         SName: arg[0].SName,
         CName: arg[0].CName,
@@ -181,7 +181,7 @@ const InvoiceReturn = () => {
                       type="text"
                       className="Id-input"
                       style={{ textAlign: "center" }}
-                      value={ salesman.SMID||customers.SMID}
+                      value={salesman.SMID || customers.SMID}
                     />
                     <input
                       className="lastinput cus-input"
@@ -205,7 +205,7 @@ const InvoiceReturn = () => {
                   <input
                     type="text"
                     name="name"
-                       value={customers.Balance}
+                    value={customers.Balance}
                     style={{ textAlign: "center" }}
                   />
                   <input
