@@ -722,7 +722,41 @@ global.share.ipcMain.on("savesalesman", (event, arg) => {
         request
           .query(`insert into Salesman  values (${id},'${arg.name}', '${arg.address}', '${arg.phone}')`)
           .then(function (recordset) {
-            send(recordset.recordset)
+  
+            conn.close();
+          })
+          .catch(function (err) {
+            console.log(err);
+            conn.close();
+          });
+        console.log("connection is created");
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+});
+
+
+
+
+global.share.ipcMain.on("addcustomer", (event, arg) => {
+  const CID = parseInt(arg.CusID)
+  const RID = parseInt(arg.RID)
+  const AID = parseInt( arg.AID)
+  const type = parseInt(arg.Type)
+  console.log(arg)
+ 
+  
+  var conn = new sql.ConnectionPool(sqlConfig);
+    conn
+      .connect()
+      .then(function () {
+        var request = new sql.Request(conn);
+        request
+          .query(`insert into Customer(CID, Name, Address, RID, AID, Contact ,CNIC,Typ) values (${CID},${arg.Name},${arg.Address},${RID},${AID},${arg.Contact},${arg.CNIC},${type})`)
+          .then(function (recordset) {
+            console.log(recordset)
+
             conn.close();
           })
           .catch(function (err) {

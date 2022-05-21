@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 import "./AddingCus.css";
 const AddingCus = () => {
-  const [regn, setRegn] = useState(true);
+  const [regn, setRegn] = useState(false);
   const [area, setArea] = useState(false);
-  const [Cus, setCus] = useState(false);
+  const [Cus, setCus] = useState(true);
 
   return (
     <>
@@ -18,8 +18,8 @@ const AddingCus = () => {
         Main Menu
       </Link>
       <div className="Adding_cus_cover">
-        <Regn regn={regn} setRegn={setRegn} setArea={setArea} setCus={setCus} />
-        <Area area={area} setRegn={setRegn} setArea={setArea} setCus={setCus} />
+        {/* <Regn regn={regn} setRegn={setRegn} setArea={setArea} setCus={setCus} />
+        <Area area={area} setRegn={setRegn} setArea={setArea} setCus={setCus} /> */}
         <Customer
           Cus={Cus}
           setRegn={setRegn}

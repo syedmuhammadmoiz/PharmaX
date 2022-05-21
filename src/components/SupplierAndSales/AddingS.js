@@ -16,7 +16,7 @@ const AddingS = () => {
       </Link>
       <div className="Adding_cus_cover">
         <Salesman sal={sal} setSup={setSup} setSal={setSal} />
-        <Supplier sup={sup} setSup={setSup} setSal={setSal} />
+        {/* <Supplier sup={sup} setSup={setSup} setSal={setSal} /> */}
       </div>
     </>
   );

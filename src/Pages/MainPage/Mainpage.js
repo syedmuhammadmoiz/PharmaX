@@ -83,30 +83,30 @@ const Mainpage = () => {
                 <p>Pur. Return View</p>
               </div>
             </Link>
-            <Link to="/StockCards" className="link">
+           
               <div className="card">
                 <img src={analytics_png} alt="invoice" />
                 <p>Stock Cards</p>
               </div>
-            </Link>
-            <Link to="/Reports" className="link">
+           
+           
               <div className="card">
                 <img src={report_png} alt="invoice" />
                 <p>Reports</p>
               </div>
-            </Link>
+           
           </div>
         </div>
         <div className="seperator" />
         <div className="right">
           <div className="para">Detailed Section</div>
           <div className="cover">
-            <Link to="/AddingCustomer" className="link">
+           
               <div className="card">
                 <img src={add_png} alt="invoice" />
                 <p>Adding</p>
               </div>
-            </Link>
+            
             <Link to="/AddingS" className="link">
               <div className="card">
                 <img src={distribution_png} alt="invoice" />

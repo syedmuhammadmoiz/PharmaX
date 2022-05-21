@@ -97,9 +97,9 @@ const InvoiceView = () => {
               <img src={bill_png} alt="invoice" className="office_img" />
               <div className="Invoice-heading">View Invoice</div>
               <div className="buttons_Invoice">
-                <button className="button_border">Print</button>
+               
                 <div className="vertical margin_side"></div>
-                <button className=" button_border margin_side">Download</button>
+               
               </div>
             </div>
             <hr />
